@@ -28,6 +28,7 @@ CFLAGS_C_Debug := \
 
 # Flags passed to only C++ files.
 CFLAGS_CC_Debug := \
+	-std=gnu++0x \
 	-fno-rtti \
 	-fno-exceptions \
 	-fno-threadsafe-statics \
@@ -40,10 +41,12 @@ CFLAGS_OBJC_Debug :=
 CFLAGS_OBJCC_Debug :=
 
 INCS_Debug := \
-	-I/Users/jedelcereceres/.node-gyp/0.12.7/include/node \
-	-I/Users/jedelcereceres/.node-gyp/0.12.7/src \
-	-I/Users/jedelcereceres/.node-gyp/0.12.7/deps/uv/include \
-	-I/Users/jedelcereceres/.node-gyp/0.12.7/deps/v8/include
+	-I/Users/jedelcereceres/.node-gyp/4.1.2/include/node \
+	-I/Users/jedelcereceres/.node-gyp/4.1.2/src \
+	-I/Users/jedelcereceres/.node-gyp/4.1.2/deps/uv/include \
+	-I/Users/jedelcereceres/.node-gyp/4.1.2/deps/v8/include \
+	-I$(srcdir)/node_modules/nan \
+	-I$(srcdir)/-I/usr/local/include
 
 DEFS_Release := \
 	'-DNODE_GYP_MODULE_NAME=addon' \
@@ -69,6 +72,7 @@ CFLAGS_C_Release := \
 
 # Flags passed to only C++ files.
 CFLAGS_CC_Release := \
+	-std=gnu++0x \
 	-fno-rtti \
 	-fno-exceptions \
 	-fno-threadsafe-statics \
@@ -81,13 +85,15 @@ CFLAGS_OBJC_Release :=
 CFLAGS_OBJCC_Release :=
 
 INCS_Release := \
-	-I/Users/jedelcereceres/.node-gyp/0.12.7/include/node \
-	-I/Users/jedelcereceres/.node-gyp/0.12.7/src \
-	-I/Users/jedelcereceres/.node-gyp/0.12.7/deps/uv/include \
-	-I/Users/jedelcereceres/.node-gyp/0.12.7/deps/v8/include
+	-I/Users/jedelcereceres/.node-gyp/4.1.2/include/node \
+	-I/Users/jedelcereceres/.node-gyp/4.1.2/src \
+	-I/Users/jedelcereceres/.node-gyp/4.1.2/deps/uv/include \
+	-I/Users/jedelcereceres/.node-gyp/4.1.2/deps/v8/include \
+	-I$(srcdir)/node_modules/nan \
+	-I$(srcdir)/-I/usr/local/include
 
 OBJS := \
-	$(obj).target/$(TARGET)/hello.o
+	$(obj).target/$(TARGET)/gsl_test.o
 
 # Add to the list of files we specially track dependencies for.
 all_deps += $(OBJS)
@@ -137,7 +143,9 @@ LIBTOOLFLAGS_Release := \
 	-undefined dynamic_lookup \
 	-Wl,-search_paths_first
 
-LIBS :=
+LIBS := \
+	-lgsl \
+	-L/usr/local/lib
 
 $(builddir)/addon.node: GYP_LDFLAGS := $(LDFLAGS_$(BUILDTYPE))
 $(builddir)/addon.node: LIBS := $(LIBS)

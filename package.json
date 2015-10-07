@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/4yopping/addon#readme",
   "dependencies": {
+    "bindings": "^1.2.1",
+    "nan": "^2.0.9",
     "node-gyp": "^3.0.3"
   }
 }
