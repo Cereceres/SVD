@@ -11,8 +11,8 @@ template <class T>
 int Dot(T* a,T* b, double& result) {
   size_t l = a->size;
   size_t k = b->size;
+  l = l >= k ? k : l ;
   size_t i ; double sum=0;
-  if ( l == k) {
    for ( i = 0; i < l; i++) {
       sum +=
       gsl_vector_get (a, i)*
@@ -20,8 +20,7 @@ int Dot(T* a,T* b, double& result) {
    }
    result = sum ;
    return 0;
-  }
-  return 1;
+
 }
 
 template <class T>
@@ -37,21 +36,21 @@ void map_vec(T* a,double (*calling)(double,int) ) {
     return sqrt(item);
  }
 template <class T>
- void couting_vec(const T* a,  const double &limit , const double &sumt, int * count, double * work){
+ void couting_vec(const T* a,  const double &limit , const double &sumt, int * count){
    int *i =  count ; *i=0;
-   work[*i]=gsl_vector_get(a, *i);
-   double _lim =work[*i]/sumt;
-   work[*i]=gsl_vector_get(a, *i);
+   double _lim =gsl_vector_get(a, *i)/sumt;
+   printf("limit %f \n",_lim );
    while(_lim <= limit) {
      (*i)++;
-     work[*i] =gsl_vector_get(a, *i);
-     _lim +=work[*i]/sumt;
+     _lim +=gsl_vector_get(a, *i)/sumt;
+     printf("limit %f \n",_lim );
    }
  }
 
 void prueba (const Nan::FunctionCallbackInfo<v8::Value>& info) {
   double x =0; int i,j,l,m,n;
   double _limit = info[1]->NumberValue();
+  printf("limit = %f\n",_limit );
   Handle<Array> array, *_array;
   if (info[0]->IsArray()) {
      array = Handle<Array>::Cast(info[0]);
@@ -74,7 +73,7 @@ void prueba (const Nan::FunctionCallbackInfo<v8::Value>& info) {
     gsl_vector_view   Column ;
     gsl_vector* Ident=gsl_vector_calloc(m);
     gsl_vector* _Ident=gsl_vector_calloc(m);
-    gsl_vector_set_all (_Ident, 1);
+    gsl_vector_set_all(_Ident, 1);
     for ( i = 0; i < column; i++) {
       Column = gsl_matrix_column (M, (size_t) i);
       N= (int) Column.vector.size;
@@ -97,18 +96,12 @@ void prueba (const Nan::FunctionCallbackInfo<v8::Value>& info) {
      gsl_linalg_SV_decomp_mod (M, X, V,S, work);
      double (*tocall)(double,int) = sqrtf ;
      map_vec(S, tocall);
-    for (i = 0; i < column; i++) {
-      printf("| ");
-      for (j = 0; j < column; j++) {
-          printf("%f ", gsl_matrix_get (V, i,j));
-      }
-        printf("| \n");
-    }
       printf("el vector S es\n" );
     gsl_vector_fprintf(stdout,S, "%f");
     Dot<gsl_vector>(S,_Ident,result);
-    double sum = result; int* count= new int; double * towork = new double[column];
-    couting_vec(S,  _limit,sum, count, towork);
+    double Sum = result; int* count= new int;
+    printf("suma = %f\n",Sum );
+    couting_vec(S,_limit,Sum, count);
     printf("count = %d\n", *count);
     int c =*count+1;
     printf("c= %d\n", c);
@@ -118,6 +111,16 @@ void prueba (const Nan::FunctionCallbackInfo<v8::Value>& info) {
     gsl_vector_memcpy (_S_, &_S.vector);
     printf("el vector _S_ es\n" );
     gsl_vector_fprintf(stdout,_S_, "%f");
+    gsl_matrix_view _V = gsl_matrix_submatrix (V,0,0,V->size1 , (size_t)c);
+    gsl_matrix * _V_ = gsl_matrix_calloc(V->size1 , (size_t)c);
+    gsl_matrix_memcpy(_V_, &_V.matrix);
+    for (i = 0; i < column; i++) {
+      printf("|");
+      for (j = 0; j < c; j++) {
+          printf(" %f ", gsl_matrix_get (_V_, i,j));
+      }
+        printf("|\n");
+    }
   }
 
 }

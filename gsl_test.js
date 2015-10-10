@@ -22,4 +22,4 @@ while (i<n) {
   i++;
 }
 console.log('A=',A.length);
-fn(A); // 'hello world'
+fn([[1,2,3,4],[3,4,6,3],[2,3,4,3],[5,3,4,2],[1,2,3,1],[0,0,0,1]],0.8); // 'hello world'
