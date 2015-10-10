@@ -144,7 +144,7 @@ LIBTOOLFLAGS_Release := \
 	-Wl,-search_paths_first
 
 LIBS := \
-	-lgsl \
+	-lgsl -lgslcblas -lm \
 	-L/usr/local/lib
 
 $(builddir)/addon.node: GYP_LDFLAGS := $(LDFLAGS_$(BUILDTYPE))

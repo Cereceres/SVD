@@ -1,0 +1,6 @@
+language: node_js
+node_js:
+- '0.12.6'
+
+notifications:
+  slack: 4yopping:fdx98F0xBt6kemQORnLBnciP

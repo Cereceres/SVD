@@ -21,6 +21,8 @@
   "dependencies": {
     "bindings": "^1.2.1",
     "nan": "^2.0.9",
-    "node-gyp": "^3.0.3"
+    "node-gyp": "^3.0.3",
+    "randgen": "^0.1.0",
+    "rng": "^0.2.2"
   }
 }
