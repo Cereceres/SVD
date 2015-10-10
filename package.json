@@ -1,19 +1,28 @@
 {
   "name": "addon",
   "version": "1.0.0",
-  "description": "addon from c++ to nodejs",
+  "description": "Addon from cpp to nodejs",
   "main": "index.js",
   "scripts": {
-    "test": "mocha ./test/test"
+    "test": "mocha ./test/test",
+    "build": "node-gyp rebuild"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/4yopping/addon.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Jesus Cereceres",
+  "license": "MIT",
+  "gypfile": true,
   "bugs": {
     "url": "https://github.com/4yopping/addon/issues"
   },
-  "homepage": "https://github.com/4yopping/addon#readme"
+  "homepage": "https://github.com/4yopping/addon#readme",
+  "dependencies": {
+    "bindings": "^1.2.1",
+    "nan": "^2.0.9",
+    "node-gyp": "^3.0.3",
+    "randgen": "^0.1.0",
+    "rng": "^0.2.2"
+  }
 }
