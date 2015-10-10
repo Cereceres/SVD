@@ -1,0 +1,19 @@
+{
+  "name": "addon",
+  "version": "1.0.0",
+  "description": "addon from c++ to nodejs",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha ./test/test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/4yopping/addon.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/4yopping/addon/issues"
+  },
+  "homepage": "https://github.com/4yopping/addon#readme"
+}
