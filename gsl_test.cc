@@ -158,9 +158,17 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
     for (i = 0; i < c; i++) {
       R_array->Set(i, Nan::New(_S_->data[i]));
     }
+      Handle<Array> V_array = Nan::New<v8::Array>(c);
+      Handle<Array> V2_array = Nan::New<v8::Array>(n);
+    for (i = 0; i < c; i++) {
+      for ( j = 0; j < n; j++) {
+          V2_array->Set(j, Nan::New(gsl_matrix_get(_V_,j,i)));
+      }
+      V_array->Set(i,V2_array );
+    }
     obj->Set(Nan::New("p_x").ToLocalChecked(),num);
-      obj->Set(Nan::New("S_corr").ToLocalChecked(),R_array);
-
+    obj->Set(Nan::New("S_corr").ToLocalChecked(),R_array);
+    obj->Set(Nan::New("V_trans").ToLocalChecked(),V_array);
     info.GetReturnValue().Set(obj);
   }
 
