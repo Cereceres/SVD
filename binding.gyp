@@ -11,7 +11,7 @@
          "-I/usr/local/include"
       ],
       "libraries": [
-        "-lgsl -lgslcblas -lm", "-L/usr/local/lib"
+        "-lgsl -lgslcblas -lm","-L/usr/local/lib"
       ]
     }
   ]
