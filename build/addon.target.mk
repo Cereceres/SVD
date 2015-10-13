@@ -31,6 +31,7 @@ CFLAGS_CC_Debug := \
 	-fno-exceptions
 
 INCS_Debug := \
+	-I/home/compu2/.node-gyp/0.12.7/include/node \
 	-I/home/compu2/.node-gyp/0.12.7/src \
 	-I/home/compu2/.node-gyp/0.12.7/deps/uv/include \
 	-I/home/compu2/.node-gyp/0.12.7/deps/v8/include \
@@ -67,6 +68,7 @@ CFLAGS_CC_Release := \
 	-fno-exceptions
 
 INCS_Release := \
+	-I/home/compu2/.node-gyp/0.12.7/include/node \
 	-I/home/compu2/.node-gyp/0.12.7/src \
 	-I/home/compu2/.node-gyp/0.12.7/deps/uv/include \
 	-I/home/compu2/.node-gyp/0.12.7/deps/v8/include \

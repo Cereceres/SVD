@@ -4,8 +4,7 @@
   "description": "Addon from cpp to nodejs",
   "main": "index.js",
   "scripts": {
-    "test": "mocha ./test/test",
-    "build": "node-gyp rebuild"
+    "test": "mocha ./test/test"
   },
   "repository": {
     "type": "git",
