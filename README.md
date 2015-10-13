@@ -1,2 +1,2 @@
 # addon
-![Logo](./newton.jpg)
+![Logo](./Newton.jpg)
