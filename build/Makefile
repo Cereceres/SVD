@@ -321,12 +321,12 @@ $(obj).$(TOOLSET)/%.o: $(obj)/%.s FORCE_DO_CMD
 
 ifeq ($(strip $(foreach prefix,$(NO_LOAD),\
     $(findstring $(join ^,$(prefix)),\
-                 $(join ^,addon.target.mk)))),)
-  include addon.target.mk
+                 $(join ^,newton.target.mk)))),)
+  include newton.target.mk
 endif
 
 quiet_cmd_regen_makefile = ACTION Regenerating $@
-cmd_regen_makefile = cd $(srcdir); /usr/local/lib/node_modules/node-gyp/gyp/gyp_main.py -fmake --ignore-environment "--toplevel-dir=." -I/Users/jedelcereceres/github/addon/build/config.gypi -I/usr/local/lib/node_modules/node-gyp/addon.gypi -I/Users/jedelcereceres/.node-gyp/4.1.2/include/node/common.gypi "--depth=." "-Goutput_dir=." "--generator-output=build" "-Dlibrary=shared_library" "-Dvisibility=default" "-Dnode_root_dir=/Users/jedelcereceres/.node-gyp/4.1.2" "-Dnode_gyp_dir=/usr/local/lib/node_modules/node-gyp" "-Dnode_lib_file=node.lib" "-Dmodule_root_dir=/Users/jedelcereceres/github/addon" binding.gyp
+cmd_regen_makefile = cd $(srcdir); /usr/local/lib/node_modules/node-gyp/gyp/gyp_main.py -fmake --ignore-environment "--toplevel-dir=." -I/Users/jedelcereceres/github/newton/build/config.gypi -I/usr/local/lib/node_modules/node-gyp/addon.gypi -I/Users/jedelcereceres/.node-gyp/4.1.2/include/node/common.gypi "--depth=." "-Goutput_dir=." "--generator-output=build" "-Dlibrary=shared_library" "-Dvisibility=default" "-Dnode_root_dir=/Users/jedelcereceres/.node-gyp/4.1.2" "-Dnode_gyp_dir=/usr/local/lib/node_modules/node-gyp" "-Dnode_lib_file=node.lib" "-Dmodule_root_dir=/Users/jedelcereceres/github/newton" binding.gyp
 Makefile: $(srcdir)/../../.node-gyp/4.1.2/include/node/common.gypi $(srcdir)/build/config.gypi $(srcdir)/binding.gyp $(srcdir)/../../../../usr/local/lib/node_modules/node-gyp/addon.gypi
 	$(call do_cmd,regen_makefile)
 

@@ -1,2 +1,2 @@
-# addon
+# Numerical module 
 ![Logo](./Newton.jpg)

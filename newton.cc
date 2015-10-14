@@ -77,7 +77,7 @@ template <class T>
  }
 
 
-// the pca 
+// the pca
 void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
     int i,j,m,n;
     double _limit = info[1]->NumberValue();
@@ -152,34 +152,34 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
     gsl_matrix_view _V = gsl_matrix_submatrix (V,0,0,V->size1 , (size_t)c);
     gsl_matrix * _V_ = gsl_matrix_calloc(V->size1 , (size_t)c);
     gsl_matrix_memcpy(_V_, &_V.matrix);
-    //with the arguments passed the probability of succed is calculated
-    Handle<Array> H_Arg=Handle<Array>::Cast(info[2]);
-    gsl_vector * Arg = gsl_vector_calloc(n),
-    *Arg_red = gsl_vector_calloc(c);
-    // The vector Arg is build grom info given
-    for ( i = 0; i < n; i++) {
-      gsl_vector_set(Arg,i,H_Arg->Get(i)->NumberValue());
-    }
-    // the media is substracted
-    gsl_vector_sub(Arg,Media);
-    // is scaled to sigma
-    gsl_vector_mul(Arg,Sigma);
-    // A matrix is build from vector Arg
-    gsl_matrix_view _Arg=
-    gsl_matrix_view_array(Arg->data, n,1);
-    // The vector of arg is build, where the dimension is <= that orginal
-    // dimension
-    gsl_matrix_view _Arg_red = gsl_matrix_view_array(Arg_red->data, c, 1);
-    gsl_matrix *V_T= gsl_matrix_calloc(c,n);
-    gsl_matrix_transpose_memcpy(V_T,_V_);
-    // The Arg reduced is calculated from X_red = A^T X
-    // where the matrix A is given for the condition of dimension reducing
-    gsl_blas_dgemm(CblasNoTrans, CblasNoTrans,
-                  1.0,V_T,&_Arg.matrix,0.0,&_Arg_red.matrix);
-    double x=normal_pdf(Arg_red,_S_);
+      //with the arguments passed the probability of succed is calculated
+      Handle<Array> H_Arg=Handle<Array>::Cast(info[2]);
+      gsl_vector * Arg = gsl_vector_calloc(n),
+      *Arg_red = gsl_vector_calloc(c);
+      // The vector Arg is build grom info given
+      for ( i = 0; i < n; i++) {
+        gsl_vector_set(Arg,i,H_Arg->Get(i)->NumberValue());
+      }
+      // the media is substracted
+      gsl_vector_sub(Arg,Media);
+      // is scaled to sigma
+      gsl_vector_mul(Arg,Sigma);
+      // A matrix is build from vector Arg
+      gsl_matrix_view _Arg=
+      gsl_matrix_view_array(Arg->data, n,1);
+      // The vector of arg is build, where the dimension is <= that orginal
+      // dimension
+      gsl_matrix_view _Arg_red = gsl_matrix_view_array(Arg_red->data, c, 1);
+      gsl_matrix *V_T= gsl_matrix_calloc(c,n);
+      gsl_matrix_transpose_memcpy(V_T,_V_);
+      // The Arg reduced is calculated from X_red = A^T X
+      // where the matrix A is given for the condition of dimension reducing
+      gsl_blas_dgemm(CblasNoTrans, CblasNoTrans,
+                    1.0,V_T,&_Arg.matrix,0.0,&_Arg_red.matrix);
+      double x=normal_pdf(Arg_red,_S_);
+      v8::Local<v8::Number> num = Nan::New(x);
     // The object to return are build
     v8::Local<v8::Object> obj = Nan::New<v8::Object>();
-    v8::Local<v8::Number> num = Nan::New(x);
     Handle<Array> R_array = Nan::New<v8::Array>(c);
     for (i = 0; i < c; i++) {
       R_array->Set(i, Nan::New(_S_->data[i]));
@@ -217,4 +217,4 @@ void Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) {
   Nan::SetMethod(module, "exports", CreateFunction);
 }
 
-NODE_MODULE(addon, Init)
+NODE_MODULE(newton, Init)

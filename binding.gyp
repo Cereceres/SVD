@@ -3,9 +3,9 @@
 {
   "targets": [
     {
-      "target_name": "addon",
+      "target_name": "newton",
       "sources": [
-        "gsl_test.cc"
+        "newton.cc"
       ],'cflags': [''],
       "include_dirs": ["<!(node -e \"require('nan')\")",
          "-I/usr/local/include"
