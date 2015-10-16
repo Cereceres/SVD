@@ -5,7 +5,7 @@
     {
       "target_name": "newton",
       "sources": [
-        "newton.cc"
+        "fromcpp/newton.cc"
       ],'cflags': [''],
       "include_dirs": ["<!(node -e \"require('nan')\")",
          "-I/usr/local/include"
