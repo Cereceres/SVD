@@ -3,23 +3,32 @@ var   mongoose = require('./mongoose');
  var Statsaving= function (namedata, namestats) {
    var doc;
   var Schema = mongoose.Schema;
-  var schemadata =  new Schema({
+  this.schemadata =  new Schema({
     data : Array
   });
-  var Modeldata = mongoose.model(namedata,schemadata);
-  var schemastats =  new Schema({
+  this.Modeldata = mongoose.model(namedata,this.schemadata);
+  this.schemastats =  new Schema({
     sigma : Array ,
     media : Array,
-    N : Number,
+    N : Array,
   });
-  schemastats.post('find', function(stats) {
-    doc =
-  });
-  var Modelstats = mongoose.model(namestats,schemastats);
+  this.schemastats.post('find', function(error,stats) {
+      var l = this.data.length;
+      for (var i = 0; i < l; i++) {
+          stats.media[i] =(stats.media[i]*stats.N[i]+this.doc.data[i])/(stats.N[i]+1);
+          stats.sigma[i] =Math.sqrt((stats.sigma[i]*stats.sigma[i]*(stats.N[i]-1)+(this.doc.data[i]-stats.media[i])*(this.doc.data[i]-stats.media[i]))/(stats.N[i]));
+          (stats.N[i])++;
+      }
+      this.doc.save.call(this.cb,function (err) {
+        stats.save(this);
+      });
 
-  this.create = function (tosave) {
-    doc = new Modeldata(tosave);
-    Modelstats.find({});
+  });
+  this.Modelstats = mongoose.model(namestats,this.schemastats);
+
+  this.create = function (tosave,cb) {
+    doc = new this.Modeldata(tosave);
+    this.Modelstats.find.call({ doc:doc, cb :cb},{});
   };
 
 };
