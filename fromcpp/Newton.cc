@@ -36,8 +36,7 @@ double  sqrtf(double item, int index){
    return p_x;
  }
 //the couting function
-template <class T>
- void couting_vec(const T* a,  const double &limit , const double &sumt, int * count){
+ void couting_vec(const gsl_vector* a,  const double &limit , const double &sumt, int * count){
    int l = (int) a->size ;
    int *i =  count ; *i=0;
    double _lim =gsl_vector_get(a, *i)/sumt;
@@ -83,8 +82,10 @@ template <class T>
 }
 //The function that shift the datas to media value and normalize to sigma
  void normalization(gsl_matrix * M, gsl_vector * Media, gsl_vector * Sigma){
-   int column = (int) M->size2;
-   double media = 0, sigma = 0,_sigma=1;
+   int column = (int) M->size2,
+   m= (int) M->size1,i;
+   gsl_vector_view   Column ;
+   double media = 0, sigma = 0,_sigma=1, result = 0;
    gsl_vector *_Ident=gsl_vector_alloc(m);
    gsl_vector *Ident=gsl_vector_alloc(m);
    gsl_vector_set_all(_Ident, 1);
@@ -127,29 +128,29 @@ template <class T>
  }
 
  void vnorm( gsl_vector* S, double * sum) {
+   int n =(int)  S->size;
    gsl_vector * ident = gsl_vector_calloc((size_t)n);
    gsl_vector_set_all(ident,1);
-   Dot(S,ident,sum);
+   Dot(S,ident,*sum);
  }
 
- void dim_red( gsl_matrix V ,gsl_matrix _V_ ,gsl_vector* S, gsl_vector* _S_,int *count) {
+ void dim_red( gsl_matrix *V ,gsl_matrix* _V_ ,gsl_vector* S, gsl_vector* _S_,int *count) {
    //With the limit given the dimension is reduced
    gsl_vector_view   _S =
    gsl_vector_subvector(S, 0, (size_t) *count);
    gsl_vector_memcpy (_S_, &_S.vector);
    //The dimension is reduced
-   gsl_matrix_view _V = gsl_matrix_submatrix (V,0,0,V->size1, (size_t)c);
+   gsl_matrix_view _V = gsl_matrix_submatrix (V,0,0,V->size1, (size_t) *count);
    gsl_matrix_memcpy(_V_, &_V.matrix);
  }
 
 // the pca
 void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
-    int i,j,m,n;
+    int i,j,n;
     // the array is read from info and stored into matrix M
      gsl_matrix *M = read_matrix(info);
      // the size of matrix is read
-     m= (int) M->size1; n = (int) M->size2;
-     double result=0; gsl_vector_view   Column ;
+      n = (int) M->size2;
     // Define the vectors Media and Sigma, The last will store
     // the madia and and sigma values to every variable.
     gsl_vector * Media=gsl_vector_calloc(n),
@@ -169,15 +170,15 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
     int* count= new int;
     // The limite for counting variables is read.
     double _limit = info[1]->NumberValue();
-    couting_vec(S,_limit,Sum, count);
+    couting_vec(S,_limit,*Sum, count);
      gsl_vector* _S_ = gsl_vector_calloc((size_t) *count);
-     gsl_matrix* _V_= gsl_matrix_calloc(V->size1 ,(size_t)c);
+     gsl_matrix* _V_= gsl_matrix_calloc(V->size1 ,(size_t) *count);
      dim_red( V ,_V_ ,S,_S_,count);
       //with the arguments passed the probability of succed is calculated
       Handle<Array> H_Arg=Handle<Array>::Cast(info[2]);
         printf("e\n");
       gsl_vector * Arg = gsl_vector_calloc(n),
-      *Arg_red = gsl_vector_calloc(c);
+      *Arg_red = gsl_vector_calloc((size_t) *count);
       printf("f\n");
       // The vector Arg is build grom info given
       for ( i = 0; i < n; i++) {
@@ -196,8 +197,8 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
       printf("4\n");
       // The vector of arg is build, where the dimension is <= that orginal
       // dimension
-      gsl_matrix_view _Arg_red = gsl_matrix_view_array(Arg_red->data, c, 1);
-      gsl_matrix *V_T= gsl_matrix_calloc(c,n);
+      gsl_matrix_view _Arg_red = gsl_matrix_view_array(Arg_red->data, (size_t) *count, 1);
+      gsl_matrix *V_T= gsl_matrix_calloc((size_t) *count,n);
       gsl_matrix_transpose_memcpy(V_T,_V_);
       // The Arg reduced is calculated from X_red = A^T X
       // where the matrix A is given for the condition of dimension reducing
@@ -209,13 +210,13 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
       v8::Local<v8::Number> num = Nan::New(x);
     // The object to return are build
     v8::Local<v8::Object> obj = Nan::New<v8::Object>();
-    Handle<Array> R_array = Nan::New<v8::Array>(c);
-    for (i = 0; i < c; i++) {
+    Handle<Array> R_array = Nan::New<v8::Array>((size_t) *count);
+    for (i = 0; i <  *count; i++) {
       R_array->Set(i, Nan::New(_S_->data[i]));
     }
-      Handle<Array> V_array = Nan::New<v8::Array>(c);
+      Handle<Array> V_array = Nan::New<v8::Array>((size_t) *count);
       Handle<Array> V2_array = Nan::New<v8::Array>(n);
-    for (i = 0; i < c; i++) {
+    for (i = 0; i < *count; i++) {
       for ( j = 0; j < n; j++) {
           V2_array->Set(j, Nan::New(gsl_matrix_get(_V_,j,i)));
       }
@@ -233,8 +234,7 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
     // The return object
     info.GetReturnValue().Set(obj);
     // deallocate the space used by the matrix
-    gsl_matrix_free (M);gsl_matrix_free (V_T);gsl_matrix_free (_V_);
-    gsl_vector_free (ident);/*gsl_vector_free (work);+*/
+    gsl_matrix_free (M);gsl_matrix_free (V_T);gsl_matrix_free (_V_);/*gsl_vector_free (work);+*/
     gsl_vector_free (Sigma);gsl_vector_free (Media);
     gsl_vector_free (S);gsl_vector_free (_S_);
     gsl_vector_free (Arg);gsl_vector_free (Arg_red);
