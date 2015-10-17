@@ -308,8 +308,13 @@ ifeq ($(strip $(foreach prefix,$(NO_LOAD),\
 endif
 
 quiet_cmd_regen_makefile = ACTION Regenerating $@
+<<<<<<< HEAD
 cmd_regen_makefile = cd $(srcdir); /home/compu2/npm-global/lib/node_modules/node-gyp/gyp/gyp_main.py -fmake --ignore-environment "--toplevel-dir=." -I/home/compu2/newton/build/config.gypi -I/home/compu2/npm-global/lib/node_modules/node-gyp/addon.gypi -I/home/compu2/.node-gyp/0.12.7/common.gypi "--depth=." "-Goutput_dir=." "--generator-output=build" "-Dlibrary=shared_library" "-Dvisibility=default" "-Dnode_root_dir=/home/compu2/.node-gyp/0.12.7" "-Dnode_gyp_dir=/home/compu2/npm-global/lib/node_modules/node-gyp" "-Dnode_lib_file=node.lib" "-Dmodule_root_dir=/home/compu2/newton" binding.gyp
 Makefile: $(srcdir)/../.node-gyp/0.12.7/common.gypi $(srcdir)/build/config.gypi $(srcdir)/binding.gyp $(srcdir)/../npm-global/lib/node_modules/node-gyp/addon.gypi
+=======
+cmd_regen_makefile = cd $(srcdir); /usr/lib/node_modules/npm/node_modules/node-gyp/gyp/gyp_main.py -fmake --ignore-environment "--toplevel-dir=." -I/home/denise/newton/build/config.gypi -I/usr/lib/node_modules/npm/node_modules/node-gyp/addon.gypi -I/home/denise/.node-gyp/0.12.7/common.gypi "--depth=." "-Goutput_dir=." "--generator-output=build" "-Dlibrary=shared_library" "-Dvisibility=default" "-Dnode_root_dir=/home/denise/.node-gyp/0.12.7" "-Dmodule_root_dir=/home/denise/newton" binding.gyp
+Makefile: $(srcdir)/../.node-gyp/0.12.7/common.gypi $(srcdir)/build/config.gypi $(srcdir)/binding.gyp $(srcdir)/../../../usr/lib/node_modules/npm/node_modules/node-gyp/addon.gypi
+>>>>>>> 211e200f12cffa0ed5978db4881fc150964f82cd
 	$(call do_cmd,regen_makefile)
 
 # "all" is a concatenation of the "all" targets from all the included
