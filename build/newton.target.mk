@@ -31,16 +31,10 @@ CFLAGS_CC_Debug := \
 	-fno-exceptions
 
 INCS_Debug := \
-<<<<<<< HEAD
 	-I/home/compu2/.node-gyp/0.12.7/include/node \
 	-I/home/compu2/.node-gyp/0.12.7/src \
 	-I/home/compu2/.node-gyp/0.12.7/deps/uv/include \
 	-I/home/compu2/.node-gyp/0.12.7/deps/v8/include \
-=======
-	-I/home/denise/.node-gyp/0.12.7/src \
-	-I/home/denise/.node-gyp/0.12.7/deps/uv/include \
-	-I/home/denise/.node-gyp/0.12.7/deps/v8/include \
->>>>>>> 211e200f12cffa0ed5978db4881fc150964f82cd
 	-I$(srcdir)/node_modules/nan \
 	-I$(srcdir)/-I/usr/local/include
 
@@ -74,16 +68,10 @@ CFLAGS_CC_Release := \
 	-fno-exceptions
 
 INCS_Release := \
-<<<<<<< HEAD
 	-I/home/compu2/.node-gyp/0.12.7/include/node \
 	-I/home/compu2/.node-gyp/0.12.7/src \
 	-I/home/compu2/.node-gyp/0.12.7/deps/uv/include \
 	-I/home/compu2/.node-gyp/0.12.7/deps/v8/include \
-=======
-	-I/home/denise/.node-gyp/0.12.7/src \
-	-I/home/denise/.node-gyp/0.12.7/deps/uv/include \
-	-I/home/denise/.node-gyp/0.12.7/deps/v8/include \
->>>>>>> 211e200f12cffa0ed5978db4881fc150964f82cd
 	-I$(srcdir)/node_modules/nan \
 	-I$(srcdir)/-I/usr/local/include
 
