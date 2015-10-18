@@ -6,7 +6,7 @@ var f_newton = newton();
 var data_model = require('./data_model');
 var A = [], B = [];
 var start = new Date().getTime();
-data_model.findRandom({}, {data: 1, _id: 0}, { skip: 10, limit: 1000000 }, function(error, res) {
+data_model.findRandom({}, {data: 1, _id: 0}, { skip: 10, limit: 1000 }, function(error, res) {
     if (error) {
       console.log('error = ', error);
       return;
