@@ -1,44 +1,66 @@
 'use strict';
 var   mongoose = require('../mongoose');
 var Schema = mongoose.Schema;
-var schemadata =  new Schema({
+var _ = require('lodash');
+var sche = {
+  schemadata: new Schema({
   data: Array,
-});
+}),
 
-var schemastats =  new Schema({
+  schemastats: new Schema({
     sigma: Array,
     media: Array,
     N: Array,
-  });
+  }),
+};
 
 // Riemann module make the stats into de data
 var Statsaving = function(namedata, namestats) {
-  var Modeldata = mongoose.model(namedata, schemadata);
-  var Modelstats = mongoose.model(namestats, schemastats);
+  var Modeldata = mongoose.model(namedata, this.schemadata);
+  var Modelstats = mongoose.model(namestats, this.schemastats);
   return function(tosave, cb) {
     var doc = new Modeldata(tosave);
-    Modelstats.find({}, function(error, stats) {
-      if (error) {
-        console.log('error into save doc = ', error); return;
-      }
-
-      var l = stats.length;
+    Modelstats.find({}, function(error, stats0) {
+      var l = doc.data.length;
+      console.log('l=', l);
+      var stats = stats0[0];
+      var sigma = _.clone(stats.sigma, true),
+      media = _.clone(stats.media, true),
+      N = _.clone(stats.N, true);
+      console.log('stats0', stats);
       for (var i = 0; i < l; i++) {
-        stats.media[i] = (stats.media[i] * stats.N[i] + doc.data[i]) / (stats.N[i] + 1);
-        stats.sigma[i] = Math.sqrt((stats.sigma[i] * stats.sigma[i] * (stats.N[i] - 1) + (doc.data[i] - stats.media[i]) * (doc.data[i] - stats.media[i])) / (stats.N[i]));
-        (stats.N[i])++;
+        console.log('N=', N[i]);
+        console.log('antes stats.media[i]', media[i]);
+        console.log('antes stats.sigma[i]', sigma[i]);
+        if (!N[i]) {N[i] = 0;}
+
+        if (!sigma[i]) {sigma[i] = 0;}
+
+        if (!media[i]) {media[i] = 0;}
+
+        console.log('N=', N[i]);
+        console.log('stats.media[i]', media[i]);
+        media[i] = (media[i] * N[i] + doc.data[i]) / (N[i] + 1);
+        console.log('stats.media[i]', media[i]);
+        console.log('stats.sigma[i]', sigma[i]);
+        sigma[i] = Math.sqrt((sigma[i] * sigma[i] * (N[i] - 1) +
+        (doc.data[i] - media[i]) * (doc.data[i] - media[i])) /
+        (N[i] + 1));
+        console.log('stats.sigma[i]', sigma[i]);
+
+        N[i] = N[i] + 1;
+        console.log('N=', N[i]);
       }
 
-      doc.save(function(err) {
-        if (err) {
-          console.log('error into save doc = ', err); return;
-        }
-
-        stats.save(cb);
+      stats.sigma = sigma;
+      stats.media = media;
+      stats.N = N;
+      stats.save(function() {
+        doc.save(cb);
       });
     });
   };
 
 };
 
-module.exports = Statsaving;
+module.exports = Statsaving.bind(sche);
