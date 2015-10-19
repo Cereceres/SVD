@@ -4,22 +4,19 @@
 var Riemann = new require('../Riemann/riemann');
 var riemann = new Riemann('data', 'stats');
 var create = riemann.create;
-var A = [], sigma, media, sqrt3 = Math.sqrt(3);
-var  _sqrt3 = 2 * sqrt3, i = 0, j = 0, m = 10, n = 1000,
- save, cb, end, time, start, pi_2 = Math.PI / 2;
-
-var rand = function(mu, sigma) {
-  return mu - sqrt3 * sigma + _sqrt3 * Math.random() *
-   sigma * Math.sin(pi_2 * Math.random());
-};
+var Noether = require('../Noether/noether');
+var random = Noether.random;
+var rand = Noether.r_uniform;
+var A = [], sigma, media,  i = 0, j = 0, m = 10, n = 1000,
+ save, cb, end, time, start;
 
 save = function() {
   i++;
   if (i < n) {
     A = [];
     for (j = 0; j < m; j++) {
-      sigma = 10 * Math.random();
-      media = 10 * Math.random();
+      sigma = 10 * random();
+      media = 10 * random();
       A[j] = rand(media, sigma);
     }
 

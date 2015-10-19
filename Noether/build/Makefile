@@ -303,13 +303,13 @@ $(obj).$(TOOLSET)/%.o: $(obj)/%.s FORCE_DO_CMD
 
 ifeq ($(strip $(foreach prefix,$(NO_LOAD),\
     $(findstring $(join ^,$(prefix)),\
-                 $(join ^,newton.target.mk)))),)
-  include newton.target.mk
+                 $(join ^,Noether.target.mk)))),)
+  include Noether.target.mk
 endif
 
 quiet_cmd_regen_makefile = ACTION Regenerating $@
-cmd_regen_makefile = cd $(srcdir); /home/compu2/npm-global/lib/node_modules/node-gyp/gyp/gyp_main.py -fmake --ignore-environment "--toplevel-dir=." -I/home/compu2/newton/build/config.gypi -I/home/compu2/npm-global/lib/node_modules/node-gyp/addon.gypi -I/home/compu2/.node-gyp/0.12.7/common.gypi "--depth=." "-Goutput_dir=." "--generator-output=build" "-Dlibrary=shared_library" "-Dvisibility=default" "-Dnode_root_dir=/home/compu2/.node-gyp/0.12.7" "-Dnode_gyp_dir=/home/compu2/npm-global/lib/node_modules/node-gyp" "-Dnode_lib_file=node.lib" "-Dmodule_root_dir=/home/compu2/newton" binding.gyp
-Makefile: $(srcdir)/../.node-gyp/0.12.7/common.gypi $(srcdir)/build/config.gypi $(srcdir)/binding.gyp $(srcdir)/../npm-global/lib/node_modules/node-gyp/addon.gypi
+cmd_regen_makefile = cd $(srcdir); /home/compu2/npm-global/lib/node_modules/node-gyp/gyp/gyp_main.py -fmake --ignore-environment "--toplevel-dir=." -I/home/compu2/newton/Noether/build/config.gypi -I/home/compu2/npm-global/lib/node_modules/node-gyp/addon.gypi -I/home/compu2/.node-gyp/0.12.7/common.gypi "--depth=." "-Goutput_dir=." "--generator-output=build" "-Dlibrary=shared_library" "-Dvisibility=default" "-Dnode_root_dir=/home/compu2/.node-gyp/0.12.7" "-Dnode_gyp_dir=/home/compu2/npm-global/lib/node_modules/node-gyp" "-Dnode_lib_file=node.lib" "-Dmodule_root_dir=/home/compu2/newton/Noether" binding.gyp
+Makefile: $(srcdir)/../../.node-gyp/0.12.7/common.gypi $(srcdir)/../../npm-global/lib/node_modules/node-gyp/addon.gypi $(srcdir)/build/config.gypi $(srcdir)/binding.gyp
 	$(call do_cmd,regen_makefile)
 
 # "all" is a concatenation of the "all" targets from all the included

@@ -1,6 +1,7 @@
 'use strict';
 var   mongoose = require('../mongoose');
 var Schema = mongoose.Schema;
+var random = require('../Noether/noether').plugin;
 var _ = require('lodash');
 
 // Riemann module make the stats into de data
@@ -13,6 +14,8 @@ var Statsaving = function(namedata, namestats) {
     media: Array,
     N: Array,
   });
+  schemadata.plugin(random);
+  schemastats.plugin(random);
   this.Modeldata  = mongoose.model(namedata, schemadata);
   this.Modelstats  = mongoose.model(namestats, schemastats);
   var create = function(tosave, cb) {

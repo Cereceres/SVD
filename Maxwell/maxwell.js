@@ -3,7 +3,11 @@
 //Maxwell make the analisys of data
 var newton = require('bindings')('newton');
 var f_newton = newton();
-var data_model = require('./data_model');
+var Riemann = new require('../Riemann/riemann');
+var riemann = new Riemann('data', 'stats');
+var data_model = riemann.Modeldata;
+var Noether = require('../Noether/noether');
+var random = Noether.random;
 var A = [], B = [];
 var start = new Date().getTime();
 data_model.findRandom({}, {data: 1, _id: 0}, { skip: 10, limit: 1000 }, function(error, res) {
@@ -12,14 +16,13 @@ data_model.findRandom({}, {data: 1, _id: 0}, { skip: 10, limit: 1000 }, function
       return;
     }
 
-    console.log('numero de dato=', res);
     res.forEach(function(item) {
       A.push(item.data);
     });
 
     var l = A[0].length;
     for (var i = 0; i < l; i++) {
-      B[i] = 20 * Math.random();
+      B[i] = 20 * random();
     }
 
     var end = new Date().getTime();
