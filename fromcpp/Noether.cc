@@ -1,16 +1,12 @@
 #include <nan.h>
-#include <stdio.h>
-#include <gsl/gsl_rng.h>
+#include <stdlib.h>
+#include <cmath>
+#include "../include/pcg_random.hpp"
 
 void Random(const Nan::FunctionCallbackInfo<v8::Value>& info) {
-	const gsl_rng_type * T;
-  gsl_rng * r;
-  gsl_rng_env_setup();
-  T = gsl_rng_default;
-  r = gsl_rng_alloc (T);
-	double random = gsl_rng_uniform (r);
-	gsl_rng_free (r);
-  info.GetReturnValue().Set(Nan::New(random));
+
+  
+		info.GetReturnValue().Set(Nan::New(random));
 }
 
 void Init(v8::Local<v8::Object> exports, v8::Local<v8::Object> module) {

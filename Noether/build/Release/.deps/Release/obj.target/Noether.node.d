@@ -1,1 +1,0 @@
-cmd_Release/obj.target/Noether.node := g++ -shared -pthread -rdynamic -m64  -Wl,-soname=Noether.node -o Release/obj.target/Noether.node -Wl,--start-group Release/obj.target/Noether/../fromcpp/Noether.o -Wl,--end-group -lgsl -lgslcblas -lm -L/usr/local/lib

@@ -154,7 +154,7 @@ double  sqrtf(double item, int index){
          gsl_matrix *_V_ = read_matrix(info);
          gsl_vector *_S_ = read_vector(info);
          // the size of matrix is read
-         n = (int) _V_->size1; count = (int) _V_->size2;
+         count = (int) _V_->size1; n = (int) _V_->size2;
         // Define the vectors Media and Sigma, The last will store
         // the madia and and sigma values to every variable.
         gsl_vector * Media=gsl_vector_calloc(n),
@@ -169,7 +169,7 @@ double  sqrtf(double item, int index){
           gsl_vector_set(Sigma,i,stats_sigma->Get(i)->NumberValue());
         }
         //with the arguments passed the probability of succed is calculated
-        Handle<Array> H_Arg=Handle<Array>::Cast(info[2]);
+        Handle<Array> H_Arg=Handle<Array>::Cast(info[1]);
         gsl_vector * Arg = gsl_vector_calloc(n),
         *Arg_red = gsl_vector_calloc((size_t) count);
         // The vector Arg is build grom info given
@@ -187,9 +187,7 @@ double  sqrtf(double item, int index){
         // dimension
         gsl_matrix_view _Arg_red =
          gsl_matrix_view_array(Arg_red->data, (size_t) count, 1);
-        gsl_matrix *V_T=
-        gsl_matrix_calloc((size_t) count,n);
-        gsl_matrix_transpose_memcpy(V_T,_V_);
+        gsl_matrix *V_T= _V_;
         // The Arg reduced is calculated from X_red = A^T X
         // where the matrix A is given for the condition of dimension reducing
         gsl_blas_dgemm(CblasNoTrans, CblasNoTrans,
@@ -200,7 +198,7 @@ double  sqrtf(double item, int index){
         gsl_vector_free (Arg);gsl_vector_free (Arg_red);
         info.GetReturnValue().Set(num);
       }
-// the pca
+// the pca analysis, the arguments are (@MatrixData, @LimitToReduce, @StatsArray)
 void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
     int i,j,n;
     // the array is read from info and stored into matrix M

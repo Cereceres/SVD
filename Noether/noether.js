@@ -1,5 +1,6 @@
 'use strict';
-var Noether = require('./build/Release/Noether');
+//var Noether = require('./build/Release/Noether');
+var Noether = Math;
 var sqrt3 = Math.sqrt(3), _sqrt3 = 2 * sqrt3, pi_2 = Math.PI / 2;
 
 //Noether take a sample from DB of observations
@@ -30,22 +31,31 @@ module.exports.plugin = exports = function(schema) {
       if (limit > num) {
         limit = num;
       }
+      var start, docs = [];
+      args.options.limit = 1;
+      var i =0;
+      var look = function ( ) {
+        i++;
+        if (i<= limit) {
+          start = Math.floor(Noether.random()*num)+1;
+          args.options.skip = start;
 
-      var start = Math.floor(Noether.random() * (num - limit + 1));
-      args.options.skip = start;
-      args.options.limit = limit;
-      var find = _this.find(args.conditions, args.fields, args.options);
-      if (populate) {
-        find.populate(populate);
-      }
-
-      find.exec(function(err, docs) {
-        if (err) {
-          return args.callback(err, undefined);
+          var find = _this.find(args.conditions, args.fields, args.options);
+          if (populate) {
+            find.populate(populate);
+          }
+          find.exec(function(err, doc) {
+            if (err) {
+              return args.callback(err, undefined);
+            }
+            docs.push(doc[0]);
+            look();
+          });
+        }else {
+          return args.callback(undefined, docs);
         }
-
-        return args.callback(undefined, docs);
-      });
+      };
+      look();
     });
   };
 

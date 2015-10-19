@@ -1,33 +1,45 @@
 'use strict';
 
-//Maxwell make the analisys of data
+//Curie calculate the probability of data given
 var newton = require('bindings')('newton');
-var f_newton = newton();
-var Riemann = new require('../Riemann/riemann');
-var riemann = new Riemann('data', 'stats');
-var data_model = riemann.Modeldata;
-var Noether = require('../Noether/noether');
-var random = Noether.random;
-var A = [], B = [];
-var start = new Date().getTime();
-data_model.findRandom({}, {data: 1, _id: 0}, { skip: 10, limit: 1000 }, function(error, res) {
-    if (error) {
-      console.log('error = ', error);
-      return;
-    }
+var Riemann = require('../Riemann/riemann');
+var pcamodel = Riemann.modelof_pca_system;
+var riemann = new Riemann();
+var statsmodel =riemann.Modelstats;
+var p_x = newton.p_x;
+var uprade_pca = require('../Darwin/darwin').pca_sample;
+var Pca_analysis= function (V_matrix,S_vector,_stats) {
+  this.V=V_matrix;
+  this.S = S_vector;
+  this.stats = _stats;
+  this.p_x= (function (analytic) {
+    return p_x(this.V,analytic,this.S,this.stats);
+  }).bind(this);
 
-    res.forEach(function(item) {
-      A.push(item.data);
-    });
+};
 
-    var l = A[0].length;
-    for (var i = 0; i < l; i++) {
-      B[i] = 20 * random();
-    }
 
-    var end = new Date().getTime();
-    var time = end - start;
-    console.log('p_x=', f_newton(A, 0.8, B).p_x);
-    console.log('Execution time: ' + time / 1000);
-
-  });
+var Pca_analytic= function (timeupgrade, sizesample,options) {
+  uprade_pca(timeupgrade, sizesample,options);
+  this.pca_vars = {V_T:[],S:[],stats :[]};
+  var pca_vars=this.pca_vars ;
+  this.tostop = setInterval(function () {
+        statsmodel.findOne({},function function_name(err,stats) {
+          pca_vars.stats = [stats.media, stats.sigma];
+          pcamodel.findOne({},function (error,pca) {
+            pca_vars.V_T = pca.V_T_matrix;
+            pca_vars.S = pca.S_vector;
+          });
+        });
+  }, 3*timeupgrade);
+  this.pca = function () {
+    var pca = new Pca_analysis(this.pca_vars.V_T,this.pca_vars.S,this.pca_vars.stats);
+    return pca;
+  };
+  this.stop = function () {
+      clearInterval(this.tostop);
+      uprade_pca.stop();
+  };
+};
+//console.log('pca=',new Pca_analytic(1000,1000).pca() );
+module.exports.Pca_analytic = Pca_analytic;

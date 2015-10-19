@@ -3,21 +3,22 @@ var   mongoose = require('../mongoose');
 var Schema = mongoose.Schema;
 var random = require('../Noether/noether').plugin;
 var _ = require('lodash');
-
-// Riemann module make the stats into de data
-var Statsaving = function(namedata, namestats) {
-  var schemadata = new Schema({
-    data: Array,
-  });
-  var schemastats = new Schema({
-    sigma: Array,
-    media: Array,
-    N: Array,
-  });
-  schemadata.plugin(random);
-  schemastats.plugin(random);
-  this.Modeldata  = mongoose.model(namedata, schemadata);
-  this.Modelstats  = mongoose.model(namestats, schemastats);
+var schemadata = new Schema({
+  data: Array,
+});
+var schemastats = new Schema({
+  sigma: Array,
+  media: Array,
+  N: Array,
+});
+schemadata.plugin(random);
+schemastats.plugin(random);
+var Modeldata  = mongoose.model('data', schemadata);
+var Modelstats  = mongoose.model('stats', schemastats);
+// Riemann module make the stats into de data when the doc is saved
+var Statsaving = function() {
+  this.Modeldata  = Modeldata;
+  this.Modelstats  = Modelstats;
   var create = function(tosave, cb) {
     var doc = new this.Modeldata(tosave);
     this.Modelstats.find({}, function(error, stats0) {
@@ -35,12 +36,13 @@ var Statsaving = function(namedata, namestats) {
         if (!media[i]) {media[i] = 0;}
 
         media[i] = (media[i] * N[i] + doc.data[i]) / (N[i] + 1);
+
         sigma[i] = Math.sqrt((sigma[i] * sigma[i] * (N[i] - 1) +
         (doc.data[i] - media[i]) * (doc.data[i] - media[i])) /
         (N[i] + 1));
+
         N[i] = N[i] + 1;
       }
-
       stats.sigma = sigma;
       stats.media = media;
       stats.N = N;
@@ -52,5 +54,14 @@ var Statsaving = function(namedata, namestats) {
 
   this.create = create.bind(this);
 };
-
+// Model of pca system
+var modelof_pca_system= function() {
+  var schema = new Schema({
+    V_T_matrix: Array,
+    S_vector: Array,
+  });
+  schema.plugin(random);
+  return mongoose.model('pca_system', schema);
+};
+Statsaving.modelof_pca_system= modelof_pca_system;
 module.exports = Statsaving;
