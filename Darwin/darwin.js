@@ -8,7 +8,7 @@ var statsmodel =riemann.Modelstats;
 var samplig = require('../Maxwell/maxwell').sample;
 var pca ;
 
-// Riemann module make the stats into de data to generate
+// make the stats into de data to generate
 // the pca_system into the DB
 var pca_sample = function(timeupgrade, sizesample,options) {
   options = options || {limit : 0.9};

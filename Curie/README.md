@@ -1,2 +1,2 @@
-# Numerical module
+# PCA analytic
 ![Logo](./curie.jpg)

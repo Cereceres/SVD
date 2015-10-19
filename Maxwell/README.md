@@ -1,2 +1,2 @@
-# Numerical module
+# Sample collector
 ![Logo](./maxwell.jpg)
