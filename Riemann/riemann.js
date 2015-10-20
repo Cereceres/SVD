@@ -15,7 +15,7 @@ schemadata.plugin(random);
 schemastats.plugin(random);
 var Modeldata  = mongoose.model('data', schemadata);
 var Modelstats  = mongoose.model('stats', schemastats);
-// Riemann module make the stats into de data when the doc is saved
+// Riemann module make the stats into de data when the doc is sa
 var Statsaving = function() {
   this.Modeldata  = Modeldata;
   this.Modelstats  = Modelstats;
@@ -36,11 +36,9 @@ var Statsaving = function() {
         if (!media[i]) {media[i] = 0;}
 
         media[i] = (media[i] * N[i] + doc.data[i]) / (N[i] + 1);
-
-        sigma[i] = Math.sqrt((sigma[i] * sigma[i] * (N[i] - 1) +
+        sigma[i] = Math.sqrt((sigma[i] * sigma[i] * N[i] +
         (doc.data[i] - media[i]) * (doc.data[i] - media[i])) /
         (N[i] + 1));
-
         N[i] = N[i] + 1;
       }
       stats.sigma = sigma;
@@ -55,12 +53,12 @@ var Statsaving = function() {
   this.create = create.bind(this);
 };
 // Model of pca system
+var schema = new Schema({
+  V_T_matrix: Array,
+  S_vector: Array,
+});
+schema.plugin(random);
 var modelof_pca_system= function() {
-  var schema = new Schema({
-    V_T_matrix: Array,
-    S_vector: Array,
-  });
-  schema.plugin(random);
   return mongoose.model('pca_system', schema);
 };
 Statsaving.modelof_pca_system= modelof_pca_system;

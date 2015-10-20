@@ -26,7 +26,7 @@ void map_vec(T* a,double (*calling)(double,int) ) {
 double  sqrtf(double item, int index){
     return sqrt(item);
  }
-// The normal function
+// The normal function calculate
  double normal_pdf(const gsl_vector * arg,const gsl_vector * sigma){
    double p_x=1;
    int i; int length = (int) arg->size;
@@ -35,7 +35,7 @@ double  sqrtf(double item, int index){
    }
    return p_x;
  }
-//the couting function
+//the couting function that eliminate de varianze without importance
  void couting_vec(const gsl_vector* a,  const double &limit , const double &sumt, int * count){
    int l = (int) a->size ;
    int *i =  count ; *i=0;
@@ -55,10 +55,12 @@ double  sqrtf(double item, int index){
    if (info[0]->IsArray()) {
       array = Handle<Array>::Cast(info[0]);
      m = (int) array->Length();
+
      _array = new Handle<Array>[m];
 
        _array[0]=Handle<Array>::Cast(array->Get(0));
      n= (int) _array[0]->Length();
+
      gsl_matrix *M = gsl_matrix_calloc(m, n) ;
      for (i = 0; i < m; i++) {
        _array[i] = Handle<Array>::Cast(array->Get(i));
@@ -100,8 +102,8 @@ double  sqrtf(double item, int index){
 //The function that shift the datas to media value and normalize to sigma
  void normalization(gsl_matrix * M, gsl_vector * Media, gsl_vector * Sigma){
    int column = (int) M->size2,
-   m= (int) M->size1,i;
-   gsl_vector_view   Column ;
+   m= (int) M->size1,i; double m_sqrt= sqrt(m);
+   gsl_vector_view   Column[column] ;
    double media = 0, sigma = 0,_sigma=1;
    gsl_vector *_Ident=gsl_vector_alloc(m);
    gsl_vector *Ident=gsl_vector_alloc(m);
@@ -109,7 +111,7 @@ double  sqrtf(double item, int index){
    gsl_vector_set_all (Ident, 1);
    for ( i = 0; i < column; i++) {
      // We read the column i from M
-     Column = gsl_matrix_column (M, (size_t) i);
+     Column[i] = gsl_matrix_column (M, (size_t) i);
     media = gsl_vector_get(Media, (size_t) i);
     sigma = gsl_vector_get(Sigma, (size_t) i);
      // The sigma^-1 is calculated
@@ -118,16 +120,13 @@ double  sqrtf(double item, int index){
      } else{
         _sigma = 0;
      }
-     //The values of media is stored into Media vector
-     gsl_vector_set(Media, (size_t) i, media);
-     //The values of sigma^-1 is stored into Sigma vector
-     gsl_vector_set(Sigma, (size_t) i, _sigma);
-
+     _sigma = _sigma/m_sqrt;
      gsl_vector_scale(Ident,media);
      // the measures are translated where the media es zero
-     gsl_vector_sub(&Column.vector, Ident) ;
+     gsl_vector_sub(&Column[i].vector, Ident) ;
      // the measures are scaled to sigma.
-     gsl_vector_scale(&Column.vector, _sigma) ;
+     gsl_vector_scale(&Column[i].vector, _sigma) ;
+     sigma = 0;media=0;
    }
    gsl_vector_free(Ident);gsl_vector_free (_Ident);
  }
@@ -166,7 +165,7 @@ double  sqrtf(double item, int index){
         Handle<Array> stats_sigma=Handle<Array>::Cast(stats->Get(1));
         for (i = 0; i < n; i++) {
           gsl_vector_set(Media,i,stats_media->Get(i)->NumberValue());
-          gsl_vector_set(Sigma,i,stats_sigma->Get(i)->NumberValue());
+          gsl_vector_set(Sigma,i,1/stats_sigma->Get(i)->NumberValue());
         }
         //with the arguments passed the probability of succed is calculated
         Handle<Array> H_Arg=Handle<Array>::Cast(info[1]);
@@ -176,11 +175,14 @@ double  sqrtf(double item, int index){
         for ( i = 0; i < n; i++) {
           gsl_vector_set(Arg,i,H_Arg->Get(i)->NumberValue());
         }
+
         // the media is substracted
         gsl_vector_sub(Arg,Media);
+
         // is scaled to sigma
         gsl_vector_mul(Arg,Sigma);
         // A matrix is build from vector Arg
+
         gsl_matrix_view _Arg=
         gsl_matrix_view_array(Arg->data, n,1);
         // The vector of arg is build, where the dimension is <= that orginal
@@ -192,6 +194,7 @@ double  sqrtf(double item, int index){
         // where the matrix A is given for the condition of dimension reducing
         gsl_blas_dgemm(CblasNoTrans, CblasNoTrans,
                       1.0,V_T,&_Arg.matrix,0.0,&_Arg_red.matrix);
+
         double x=normal_pdf(Arg_red,_S_);
         v8::Local<v8::Number> num = Nan::New(x);
         gsl_matrix_free (V_T);
@@ -202,9 +205,11 @@ double  sqrtf(double item, int index){
 void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
     int i,j,n;
     // the array is read from info and stored into matrix M
+
      gsl_matrix *M = read_matrix(info);
      // the size of matrix is read
       n = (int) M->size2;
+
     // Define the vectors Media and Sigma, The last will store
     // the madia and and sigma values to every variable.
     gsl_vector * Media=gsl_vector_calloc(n),
@@ -219,13 +224,16 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
       gsl_vector_set(Sigma,i,stats_sigma->Get(i)->NumberValue());
     }
     normalization(M,Media,Sigma);
+
     gsl_matrix *V = gsl_matrix_calloc( n,  n) ;
       gsl_matrix *X = gsl_matrix_calloc(n, n) ;
       gsl_vector *work = gsl_vector_calloc((size_t) n);
     gsl_vector *S = gsl_vector_calloc((size_t) n);
     // The SVD is done
     //gsl_linalg_SV_decomp_jacobi(M,V,S);
+
      gsl_linalg_SV_decomp_mod(M, X, V,S, work);
+
     double * Sum = new double;
     vnorm(S,Sum);
     int* count= new int;
@@ -235,15 +243,14 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
      gsl_vector* _S_ = gsl_vector_calloc((size_t) *count);
      gsl_matrix* _V_= gsl_matrix_calloc(V->size1 ,(size_t) *count);
      dim_red( V ,_V_ ,S,_S_,count);
+
     // The object to return are build
     v8::Local<v8::Object> obj = Nan::New<v8::Object>();
     Handle<Array> R_array = Nan::New<v8::Array>((size_t) *count);
+    Handle<Array> V_array = Nan::New<v8::Array>((size_t) *count);
+    Handle<Array> V2_array = Nan::New<v8::Array>(n);
     for (i = 0; i <  *count; i++) {
       R_array->Set(i, Nan::New(_S_->data[i]));
-    }
-      Handle<Array> V_array = Nan::New<v8::Array>((size_t) *count);
-      Handle<Array> V2_array = Nan::New<v8::Array>(n);
-    for (i = 0; i < *count; i++) {
       for ( j = 0; j < n; j++) {
           V2_array->Set(j, Nan::New(gsl_matrix_get(_V_,j,i)));
       }

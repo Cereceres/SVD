@@ -17,7 +17,7 @@ var pca_sample = function(timeupgrade, sizesample,options) {
     samplig(sizesample,function (Sample) {
       statsmodel.findOne({},function function_name(err,stats) {
         pca = gsl_pca(Sample,limit,[stats.media,stats.sigma]);
-        pcamodel.update({}, { $set: { V_T_matrix: pca.V_trans,S_vector : pca.S_corr }},function (error) {
+        pcamodel.update({},{ V_T_matrix: pca.V_trans,S_vector : pca.S_corr },function (error) {
           if (error) {
             console.log('Error on save de PCA',error);
           }

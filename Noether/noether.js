@@ -37,9 +37,8 @@ module.exports.plugin = exports = function(schema) {
       var look = function ( ) {
         i++;
         if (i<= limit) {
-          start = Math.floor(Noether.random()*num)+1;
+          start = Math.floor(Noether.random()*num);
           args.options.skip = start;
-
           var find = _this.find(args.conditions, args.fields, args.options);
           if (populate) {
             find.populate(populate);
@@ -48,7 +47,9 @@ module.exports.plugin = exports = function(schema) {
             if (err) {
               return args.callback(err, undefined);
             }
-            docs.push(doc[0]);
+            if (doc.length) {
+              docs.push(doc[0]);
+            }
             look();
           });
         }else {

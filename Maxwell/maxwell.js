@@ -7,7 +7,7 @@ var data_model = riemann.Modeldata;
 var _ = require('lodash');
 var A = [];
 module.exports.sample = function(Nsample, cb) {
-  data_model.findRandom({}, {data: 1, _id: 0}, { limit: Nsample },
+  data_model.findRandom({}, {}, { limit: Nsample },
     function(error, res) {
       if (error) {
         console.log('error = ', error);
