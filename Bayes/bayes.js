@@ -7,7 +7,7 @@ var create = riemann.create;
 var Noether = require('../Noether/noether');
 var random = Noether.random;
 var rand = Noether.r_uniform;
-var A = [], sigma, media,  i = 0, j = 0, m = 4, n = 2000,
+var A = [], sigma, media,  i = 0, j = 0, m = 4, n = 10000,
  save, cb, end, time, start;
 
 save = function() {
@@ -22,6 +22,7 @@ save = function() {
       A[j] = rand(media, sigma);
 
     }
+
     create({data:A}, cb);
   }else {
     end = new Date().getTime();
@@ -30,6 +31,7 @@ save = function() {
     return;
   }
 };
+
 cb = function(err) {
   if (err) {
     console.log('err=', err);

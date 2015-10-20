@@ -13,11 +13,12 @@ module.exports.sample = function(Nsample, cb) {
         console.log('error = ', error);
         return;
       }
+
       res.forEach(function(item) {
         A.push(item.data);
       });
-      var _A = _.clone(A,true);
-      A=[];
-      cb(_A);
+
+      cb(A);
+      A = [];
     });
 };
