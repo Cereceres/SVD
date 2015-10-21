@@ -19,9 +19,20 @@ var Pca_analysis = function(V_matrix, S_vector, _stats) {
 };
 
 var Pca_analytic = function(timeupgrade, sizesample, options) {
-  uprade_pca(timeupgrade, sizesample, options);
+  //if the time arguments is passed the upgrade methos is exec
+  if (timeupgrade) {
+    uprade_pca(timeupgrade, sizesample, options);
+  }
+
+  // the upgrade method
+  this.upgrade = function(timeupgrade, sizesample, options) {
+    uprade_pca(timeupgrade, sizesample, options);
+  };
+
   this.pca_vars = {V_T:[], S:[], stats:[]};
   var _this = this;
+
+  // the callback receive the p_x function as argument.
   this.pca = function(cb) {
     statsmodel.findOne({}, function function_name(err, stats) {
       _this.pca_vars.stats =
@@ -48,4 +59,4 @@ Pca_analytic.stop = function() {
 //   //Pca_analytic.stop();
 // });
 
-module.exports.Pca_analytic = Pca_analytic;
+module.exports = Pca_analytic;

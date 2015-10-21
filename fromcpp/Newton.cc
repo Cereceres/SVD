@@ -5,6 +5,9 @@
 #include <nan.h>
 #include <math.h>
 #include <gsl/gsl_randist.h>
+#include <gsl/gsl_cdf.h>
+#include <gsl/gsl_randist.h>
+
 using namespace v8;
 // The Dot function that calculate the dot producto between two vectors
 int Dot(const gsl_vector * a, const gsl_vector * b, double& result) {
@@ -37,6 +40,19 @@ double  sqrtf(double item, int index){
    }
    return p_x;
  }
+
+ // The normal comulative function calculate
+  double normal_cdf_Q(const gsl_vector * arg,const gsl_vector * sigma){
+    double twopisqrt = sqrt(2*M_PI),p_x=1/twopisqrt, mu=0;
+    int i; int length = (int) arg->size;
+    for ( i = 0; i < length; i++) {
+      mu = mu+(arg->data[i]/sigma->data[i])*
+      (arg->data[i]/sigma->data[i]);
+    }
+    p_x = gsl_cdf_gaussian_Q(mu,1);
+
+    return p_x;
+  }
 //the couting function that eliminate de varianze without importance
  void couting_vec(const gsl_vector* a,  const double &limit , const double &sumt, int * count){
    int l = (int) a->size ;
@@ -196,9 +212,10 @@ double  sqrtf(double item, int index){
         // where the matrix A is given for the condition of dimension reducing
         gsl_blas_dgemm(CblasNoTrans, CblasNoTrans,
                       1.0,V_T,&_Arg.matrix,0.0,&_Arg_red.matrix);
-        printf("datos reducido es\n" );
-        gsl_vector_fprintf (stdout, Arg_red, "%f");
-        double x=normal_pdf(Arg_red,_S_);
+        // printf("datos reducido es\n" );
+        // gsl_vector_fprintf (stdout, Arg_red, "%f");
+        // double x=normal_pdf(Arg_red,_S_);
+        double x=normal_cdf_Q(Arg_red,_S_);
         v8::Local<v8::Number> num = Nan::New(x);
         gsl_matrix_free (V_T);
         gsl_vector_free (Arg);gsl_vector_free (Arg_red);

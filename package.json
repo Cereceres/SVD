@@ -2,7 +2,7 @@
   "name": "addon",
   "version": "0.0.1",
   "description": "Addon from c++ to nodejs",
-  "main": "index.js",
+  "main": "newton.js",
   "dependencies": {
     "bindings": "^1.2.1",
     "bluebird": "^2.10.2",
