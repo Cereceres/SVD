@@ -221,6 +221,20 @@ double  sqrtf(double item, int index){
         gsl_vector_free (Arg);gsl_vector_free (Arg_red);
         info.GetReturnValue().Set(num);
       }
+      void print_M(gsl_matrix * M){
+        printf("The matrix\n" );
+        int m = (int ) M->size1,n = (int ) M->size2 ;
+        printf("{");
+        for (int i = 0; i < m; i++) {
+          printf("|");
+          for (int j = 0; j < n; j++) {
+          printf("%f ", gsl_matrix_get(M, i, j));
+          }
+          printf("|\n");
+        }
+        printf("}\n");
+      }
+
 // the pca analysis, the arguments are (@MatrixData, @LimitToReduce, @StatsArray)
 void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
     int i,j,n;
@@ -254,8 +268,9 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
     // The SVD is done
     //gsl_linalg_SV_decomp_jacobi(M,V,S);
 
-     gsl_linalg_SV_decomp_mod(M, X, V,S, work);
 
+     gsl_linalg_SV_decomp_mod(M, X, V,S, work);
+     print_M(V);
     double * Sum = new double;
     vnorm(S,Sum);
     int* count= new int;
@@ -265,20 +280,21 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
      gsl_vector* _S_ = gsl_vector_calloc((size_t) *count);
      gsl_matrix* _V_= gsl_matrix_calloc(V->size1 ,(size_t) *count);
      dim_red( V ,_V_ ,S,_S_,count);
-
+     print_M(_V_);
     // The object to return are build
     v8::Local<v8::Object> obj = Nan::New<v8::Object>();
     Handle<Array> R_array = Nan::New<v8::Array>((size_t) *count);
     Handle<Array> V_array = Nan::New<v8::Array>((size_t) *count);
-    Handle<Array> V2_array = Nan::New<v8::Array>(n);
+    Handle<Array> *V2_array = new  Handle<Array>[*count];
     for (i = 0; i <  *count; i++) {
       R_array->Set(i, Nan::New(_S_->data[i]));
+      V2_array[i]= Nan::New<v8::Array>(n);
       for ( j = 0; j < n; j++) {
-          V2_array->Set(j, Nan::New(gsl_matrix_get(_V_,j,i)));
+          V2_array[i]->Set(j, Nan::New(gsl_matrix_get(_V_,j,i)));
       }
-      V_array->Set(i,V2_array );
+      V_array->Set(i,V2_array[i]);
     }
-    // deallocate the space used by the matrix
+    // unallocate the space used by the matrix
     gsl_matrix_free (M);gsl_matrix_free (_V_);
     gsl_vector_free (Sigma);gsl_vector_free (Media);
     gsl_vector_free (S);gsl_vector_free (_S_);

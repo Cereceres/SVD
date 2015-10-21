@@ -2,12 +2,13 @@
 
 //Newton exports the save and p_x method
 var Riemann = require('./Riemann/riemann');
+module.exports.bayes = require('./Bayes/bayes');
 var riemann = new Riemann();
 var Curie = require('./Curie/curie'), P;
 var curie = new Curie();
 
-module.exports = function(Datum, cb, upgrade) {
-  if (upgrade) {
+module.exports = function(Datum, cb, save) {
+  if (save) {
     riemann(Datum);
   }
 

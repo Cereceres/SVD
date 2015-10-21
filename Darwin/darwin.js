@@ -17,12 +17,12 @@ var pca_sample = function(timeupgrade, sizesample, options) {
     samplig(sizesample, function(Sample) {
       statsmodel.findOne({}, function function_name(err, stats) {
         pca = gsl_pca(Sample, limit, [stats.media, stats.sigma]);
-        pcamodel.update({}, { V_T_matrix: pca.V_trans, S_vector: pca.S_corr }, function(error) {
+        pcamodel.findOneAndUpdate({}, { V_T_matrix: pca.V_trans, S_vector: pca.S_corr },{new : true,upsert: true}, function(error,doc) {
+
           if (error) {
             console.log('Error on save de PCA', error);
           }
-
-          console.log('matrix is upgrade');
+          console.log('matrix is upgrade',doc);
         });
       });
     });

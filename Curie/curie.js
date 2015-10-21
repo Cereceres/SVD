@@ -51,7 +51,7 @@ Pca_analytic.stop = function() {
   uprade_pca.stop();
 };
 
-// // uprade_pca(1000, 10);
+uprade_pca(10000, 1000);
 //
 // new Pca_analytic(10000, 1000).pca(function(p_x) {
 //   console.log('p_x=', p_x([2, 2, 2, 2]));
