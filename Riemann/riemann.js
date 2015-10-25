@@ -24,16 +24,16 @@ var Statsaving = function() {
     var doc = new this.Modeldata(tosave);
     this.Modelstats.find({}, function(error, stats0) {
       var l = doc.data.length;
-
       var stats = stats0[0];
+      if (!stats) {
+        stats = {sigma : [], media : {}, N:[]};
+      }
       var sigma = _.clone(stats.sigma, true),
       media = _.clone(stats.media, true),
       N = _.clone(stats.N, true);
       for (var i = 0; i < l; i++) {
         if (!N[i]) {N[i] = 0;}
-
         if (!sigma[i]) {sigma[i] = 0;}
-
         if (!media[i]) {media[i] = 0;}
 
         media[i] = (media[i] * N[i] + doc.data[i]) / (N[i] + 1);

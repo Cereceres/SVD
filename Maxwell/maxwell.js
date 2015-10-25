@@ -4,7 +4,6 @@
 var Riemann = require('../Riemann/riemann');
 var riemann = new Riemann();
 var data_model = riemann.Modeldata;
-var _ = require('lodash');
 var A = [];
 module.exports.sample = function(Nsample, cb) {
   data_model.findRandom({}, {}, { limit: Nsample },

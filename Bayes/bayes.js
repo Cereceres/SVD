@@ -2,7 +2,7 @@
 
 //Bayes generate the aleatory data
 var Riemann = new require('../Riemann/riemann');
-var AL = new require('nsolvejs').AL;
+var AL = require('nsolvejs').AL;
 var riemann = new Riemann();
 var create = riemann.create;
 var Noether = require('../Noether/noether');

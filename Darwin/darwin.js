@@ -17,8 +17,13 @@ var pca_sample = function(timeupgrade, sizesample, options) {
     samplig(sizesample, function(Sample) {
       statsmodel.findOne({}, function function_name(err, stats) {
         pca = gsl_pca(Sample, limit, [stats.media, stats.sigma]);
-        pcamodel.findOneAndUpdate({}, { V_T_matrix: pca.V_trans, S_vector: pca.S_corr },{new : true,upsert: true}, function(error) {
-
+        pcamodel.findOneAndUpdate({}, { V_T_matrix: pca.V_trans, S_vector: pca.S_corr },{new : true,upsert: true}, function(error,doc) {
+          if(!doc){pcamodel.create({ V_T_matrix: pca.V_trans, S_vector: pca.S_corr },function (arr) {
+            if (arr) {
+              console.log('Error on create de PCA', error);
+            }
+            console.log('matrix is updated');
+          });}
           if (error) {
             console.log('Error on save de PCA', error);
           }
@@ -29,7 +34,6 @@ var pca_sample = function(timeupgrade, sizesample, options) {
   }, timeupgrade);
 
   pca_sample.tostop = tostop;
-  return tostop;
 };
 
 pca_sample.stop = function() {
