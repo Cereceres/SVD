@@ -15,7 +15,8 @@
     "nsolvejs": "0.0.7",
     "randgen": "^0.1.0",
     "rc": "^1.1.2",
-    "rng": "^0.2.2"
+    "rng": "^0.2.2",
+    "simple-asyncify": "^1.0.0"
   },
   "devDependencies": {},
   "scripts": {

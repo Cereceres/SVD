@@ -16,7 +16,7 @@ schemastats.plugin(random);
 var Modeldata  = mongoose.model('data', schemadata);
 var Modelstats  = mongoose.model('stats', schemastats);
 
-// Riemann module make the stats into de data when the doc is sa
+// Riemann module make the stats into de data when the doc is saved
 var Statsaving = function() {
   this.Modeldata  = Modeldata;
   this.Modelstats  = Modelstats;

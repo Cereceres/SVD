@@ -44,8 +44,26 @@ cb = function(err) {
   }
 };
 
-start = new Date().getTime();
-module.exports = function(numDatos, numVariables,numVarCorr) {
+
+function asyncify(syncFn) {
+  var   callback;
+  return function() {
+    var args = Array.prototype.slice.call(arguments);
+      callback = args.pop();
+    var result;
+    setImmediate(function() {
+      try {
+        result = syncFn.apply(this, args);
+      } catch (error) {
+        return callback(error);
+      }
+      callback(null, result);
+    });
+  };
+}
+
+module.exports =asyncify(function(numDatos, numVariables,numVarCorr) {
+  start = new Date().getTime();
   var m = numVariables;
   var n = numDatos;
   var k = numVarCorr;
@@ -53,4 +71,4 @@ module.exports = function(numDatos, numVariables,numVarCorr) {
     return -1+2*Math.random();
   });
   save(k, n,B);
-};
+});

@@ -8,10 +8,13 @@ var Curie = require('./Curie/curie'), P;
 var curie = new Curie();
 var AL = new require('nsolvejs').AL;
 var _this = module.exports;
-
+/* Here expors the method that calculate the probability of datum
+*  the callback receive the probability as argument and sabe is a
+*  boolean that say if datum is saved
+*/
 module.exports = function(Datum, cb, save) {
   if (save) {
-    riemann(Datum);
+    riemann.create(Datum);
   }
 
   curie.pca(function(p_x) {
@@ -24,21 +27,30 @@ module.exports = function(Datum, cb, save) {
 
 };
 
+/* This function upgrade the pca analysis and save into de DB
+*  The arguments are the time to upgrade, size of sample taken
+*   and finally the options, only the limit to dimension reducing
+*/
 module.exports.upgrade = function(timeupgrade, sizesample, options) {
   curie.upgrade(timeupgrade, sizesample, options);
   return _this;
 };
-
+/* Stop the upgrade function
+*/
 module.exports.stop = function() {
   curie.stop();
   return _this;
 };
-
+/* Save the datum into de DB
+*/
 module.exports.save = function(Datum) {
   riemann.create(Datum);
   return _this;
 };
-
+/*@Constructor that build a anormal watcher datum.
+* The arguments are the dist value to discard a datum,
+* the callback receive true/false is the datum is anormal or not.
+*/
 module.exports.anormalDatum = function(dist, callback) {
   if (callback) {
     this.cb = callback;
@@ -46,16 +58,17 @@ module.exports.anormalDatum = function(dist, callback) {
 
   this.dist = dist;
   var __this = this;
-  this.isnormal = function(Datum, cb) {
+  /*the function anormal its available into the instance*/
+  this.isnormal = function(Datum, cb,itsaved) {
+    if(itsaved===undefined){itsaved = true;}
     if (!cb) {cb = __this.cb;}
-
     module.exports(Datum, function(P) {
       if (__this.dist > P) {
         cb(false);
       }else {
         cb(true);
       }
-    });
+    },itsaved);
 
   };
 	};
@@ -74,9 +87,7 @@ module.exports.anormalDatum = function(dist, callback) {
         return 1;
       }).trans();
       riemann.Modelstats.find({},function (error,stats) {
-
         if(!stats.length){
-        
           riemann.Modelstats.create({sigma : sigma, media:media , N:N},function (err) {
             if (err) {console.log('error on create stats:',err);}
 
@@ -89,11 +100,11 @@ module.exports.anormalDatum = function(dist, callback) {
             });
           });
         }else {
-
           Riemann.modelof_pca_system().find({},function (arr,pca) {
             if (!pca.length) {
-
               Riemann.modelof_pca_system().create({V_T_matrix : V_T.array, S_vector : S.array[0]},cb);
+            } else{
+              cb();
             }
           });
         }

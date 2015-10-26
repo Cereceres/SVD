@@ -74,11 +74,12 @@ double  sqrtf(double item, int index){
       array = Handle<Array>::Cast(info[0]);
      m = (int) array->Length();
     //  printf("m= %d\n",m );
+
      _array = new Handle<Array>[m];
 
        _array[0]=Handle<Array>::Cast(array->Get(0));
      n= (int) _array[0]->Length();
-      // printf("n= %d\n",n );
+  printf("n= %d and m= %d to build the matrix \n",n,m );
      gsl_matrix *M = gsl_matrix_calloc(m, n) ;
      for (i = 0; i < m; i++) {
        _array[i] = Handle<Array>::Cast(array->Get(i));
@@ -239,7 +240,7 @@ double  sqrtf(double item, int index){
 void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
     int i,j,n;
     // the array is read from info and stored into matrix M
-
+    printf("reading matrix\n" );
      gsl_matrix *M = read_matrix(info);
      // the size of matrix is read
       n = (int) M->size2;
@@ -249,6 +250,7 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
     * Sigma=gsl_vector_calloc(n) ;
     // We read the variables from the matrix data, and we make
     //the media = 0 normalize the measures to sigma.
+      printf("reading media and sigma\n" );
     Handle<Array> stats=Handle<Array>::Cast(info[2]);
     Handle<Array> stats_media=Handle<Array>::Cast(stats->Get(0));
     Handle<Array> stats_sigma=Handle<Array>::Cast(stats->Get(1));
@@ -258,6 +260,7 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
     }
     // printf("la matrix antes de normalizar es\n" );
     // gsl_matrix_fprintf (stdout, M, "%f");
+      printf("normalizing data\n" );
     normalization(M,Media,Sigma);
     // printf("la matrix despues de normalizar es\n" );
     // gsl_matrix_fprintf (stdout, M, "%f");
@@ -267,8 +270,7 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
     gsl_vector *S = gsl_vector_calloc((size_t) n);
     // The SVD is done
     //gsl_linalg_SV_decomp_jacobi(M,V,S);
-
-
+      printf("SVD descompisiton\n" );
      gsl_linalg_SV_decomp_mod(M, X, V,S, work);
      print_M(V);
     double * Sum = new double;
@@ -286,6 +288,7 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
     Handle<Array> R_array = Nan::New<v8::Array>((size_t) *count);
     Handle<Array> V_array = Nan::New<v8::Array>((size_t) *count);
     Handle<Array> *V2_array = new  Handle<Array>[*count];
+      printf("Build objects to return\n" );
     for (i = 0; i <  *count; i++) {
       R_array->Set(i, Nan::New(_S_->data[i]));
       V2_array[i]= Nan::New<v8::Array>(n);

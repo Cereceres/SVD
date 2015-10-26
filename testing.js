@@ -1,16 +1,27 @@
 'use strict';
 
 //testing the methos exported from Newton
-var newton = require('./newton');
-var fraud  = new newton.anormalDatum(0.03).isnormal;
+var Newton = require('./newton');
+var newton =new Newton.anormalDatum(0.07);
+var fraud  = newton.isnormal,i=0;
 var cb =  function(its) {
   console.log('fraude=', !its);
 };
-
-newton.initall({sigma : [1,1,1,1],media:[0,0,0,0], N:[]},function () {
-  require('./Bayes/bayes')(10000, 4,2);
-  for (var i = 0; i < 10; i++) {
+function f() {
+  console.log('upgrading with newton');
+  Newton.upgrade(11000,100,{limit : 0.7});
+  console.log('the call number i='+i);
+  setInterval(function () {
     fraud([10 * Math.random(), 10*Math.random(),
-  		10 * Math.random(),10*Math.random(),], cb);
-  }
+      10 * Math.random(),10*Math.random(),], cb);
+  },550);
+}
+
+Newton.initall({sigma : [4,3,6,2],media:[7,1,5.7,14], N:[]},function () {
+  console.log('Generaing the data with bayes');
+  require('./Bayes/bayes')(1000, 4,2,function () {
+    console.log('Bayes is done');
+  });
+  console.log('Doing calls of random data');
+  f();
 });

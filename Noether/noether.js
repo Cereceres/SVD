@@ -1,5 +1,5 @@
 'use strict';
-//var Noether = require('./build/Release/Noether');
+var Normal = require('./build/Release/Noether').random;
 var Noether = Math;
 var sqrt3 = Math.sqrt(3), _sqrt3 = 2 * sqrt3, pi_2 = Math.PI / 2;
 
@@ -47,8 +47,12 @@ module.exports.plugin = exports = function(schema) {
             if (err) {
               return args.callback(err, undefined);
             }
-            if (doc.length) {
-              docs.push(doc[0]);
+            if (doc.length  ) {
+              if (doc[0].length) {
+                docs.push(doc[0]);
+              }else{i--;}
+            }else {
+              i--;
             }
             look();
           });
@@ -141,3 +145,6 @@ module.exports.r_uniform = function(mu, sigma) {
   return mu - sqrt3 * sigma + _sqrt3 *  Noether.random()  *
    sigma * Math.sin(pi_2 *  Noether.random());
 };
+
+
+module.exports.normal = Normal;

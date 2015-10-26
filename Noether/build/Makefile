@@ -38,6 +38,10 @@ abs_obj := $(abspath $(obj))
 # generated dependency rule Makefiles in one pass.
 all_deps :=
 
+ifneq (,$(filter $(origin CXX), undefined default))
+  CXX = $(abspath /usr/bin/clang++)
+endif
+LINK ?= $(abspath /usr/bin/clang++)
 
 
 CC.target ?= $(CC)
@@ -321,8 +325,8 @@ $(obj).$(TOOLSET)/%.o: $(obj)/%.s FORCE_DO_CMD
 
 ifeq ($(strip $(foreach prefix,$(NO_LOAD),\
     $(findstring $(join ^,$(prefix)),\
-                 $(join ^,Noether.target.mk)))),)
-  include Noether.target.mk
+                 $(join ^,noether.target.mk)))),)
+  include noether.target.mk
 endif
 
 quiet_cmd_regen_makefile = ACTION Regenerating $@
