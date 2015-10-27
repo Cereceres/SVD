@@ -1,5 +1,5 @@
 {
-  "name": "addon",
+  "name": "newton",
   "version": "0.0.1",
   "description": "Addon from c++ to nodejs",
   "main": "newton.js",

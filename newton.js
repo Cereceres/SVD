@@ -17,7 +17,9 @@ function asyncify(syncFn) {
   var   callback;
   return function() {
     var args = Array.prototype.slice.call(arguments);
+    if (typeof args[args.length-1]==='function') {
       callback = args.pop();
+    }else{callback = undefined;}
     var result;
     setImmediate(function() {
       try {
