@@ -7,7 +7,7 @@ var riemann = new Riemann();
 var create = riemann.create;
 var Noether = require('../Noether/noether');
 var random = Noether.random;
-var rand = Noether.r_uniform;
+var rand = Noether.normal;
 var A = [], sigma, media,  i = 0, j = 0, _m, _n, Vx,Vy,_A,
  save, cb, end, time, start;
 
@@ -19,10 +19,9 @@ save = function(m, n,B) {
   A = [];
   A[0]=[];
   if (i < n) {
-
     for (j = 0; j < m; j++) {
-      sigma = 10 * random();
-      media = 10 * random();
+      sigma = 100 * random();
+      media = 20 * random();
       A[0][j] = rand(media, sigma);
     }
     Vy = new AL.matrix(A);

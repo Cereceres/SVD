@@ -100,6 +100,7 @@ module.exports.plugin = exports = function(schema) {
       });
     });
   };
+  // Check the arguments fo plugin
 
   var checkParams = function(conditions, fields, options, callback) {
     if (typeof conditions === 'function') {
@@ -128,7 +129,7 @@ module.exports.plugin = exports = function(schema) {
     };
   };
 };
-
+// random function between a and b
 module.exports.random = function(a, b) {
   if (a === undefined || b === undefined) {return Noether.random();}
 
@@ -140,11 +141,18 @@ module.exports.random = function(a, b) {
 
   return (b - a) * Noether.random() + a;
 };
-
+// the random number generater with mu and sigma
 module.exports.r_uniform = function(mu, sigma) {
   return mu - sqrt3 * sigma + _sqrt3 *  Noether.random()  *
    sigma * Math.sin(pi_2 *  Noether.random());
 };
+// the random generater normal with mu and sigma
+module.exports.normal = function (mu,sigma)
+{
+	 var  two_pi = 2.0*3.14159265358979323846;
 
+	var  z0;
 
-module.exports.normal = Normal;
+	z0 = Math.sqrt(-2.0 * Math.log(Math.random())) * Math.cos(two_pi * Math.random());
+	return z0 * sigma + mu;
+};

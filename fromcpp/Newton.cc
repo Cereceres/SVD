@@ -79,7 +79,6 @@ double  sqrtf(double item, int index){
 
        _array[0]=Handle<Array>::Cast(array->Get(0));
      n= (int) _array[0]->Length();
-  printf("n= %d and m= %d to build the matrix \n",n,m );
      gsl_matrix *M = gsl_matrix_calloc(m, n) ;
      for (i = 0; i < m; i++) {
        _array[i] = Handle<Array>::Cast(array->Get(i));

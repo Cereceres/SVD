@@ -15,17 +15,16 @@
         [ 'OS=="mac"', {
 
           'xcode_settings': {
-            'OTHER_CPLUSPLUSFLAGS' : ['-std=c++11'],
-
-            },
+              'CLANG_CXX_LANGUAGE_STANDARD': 'gnu++11',  # -std=gnu++11
+  },
 
         }],
-      ],
+      ],"cflags_cc":['-stdlib=libc++'],
       "include_dirs": ["<!(node -e \"require('nan')\")",
          "-I/usr/local/include"
       ],
       "libraries": [
-        "-lgsl -lgslcblas -lm","-L/usr/local/lib"]
+        "-lgsl -lgslcblas -lm -lstdc++","-L/usr/local/lib"]
     },
   ],
 }

@@ -28,11 +28,11 @@ CFLAGS_C_Debug := \
 
 # Flags passed to only C++ files.
 CFLAGS_CC_Debug := \
-	-std=gnu++0x \
+	-std=gnu++11 \
 	-fno-rtti \
 	-fno-exceptions \
 	-fno-threadsafe-statics \
-	-std=c++11
+	-fno-strict-aliasing
 
 # Flags passed to only ObjC files.
 CFLAGS_OBJC_Debug :=
@@ -72,11 +72,11 @@ CFLAGS_C_Release := \
 
 # Flags passed to only C++ files.
 CFLAGS_CC_Release := \
-	-std=gnu++0x \
+	-std=gnu++11 \
 	-fno-rtti \
 	-fno-exceptions \
 	-fno-threadsafe-statics \
-	-std=c++11
+	-fno-strict-aliasing
 
 # Flags passed to only ObjC files.
 CFLAGS_OBJC_Release :=
@@ -144,7 +144,7 @@ LIBTOOLFLAGS_Release := \
 	-Wl,-search_paths_first
 
 LIBS := \
-	-lgsl -lgslcblas -lm \
+	-lgsl -lgslcblas -lm -lstdc++ \
 	-L/usr/local/lib
 
 $(builddir)/noether.node: GYP_LDFLAGS := $(LDFLAGS_$(BUILDTYPE))
