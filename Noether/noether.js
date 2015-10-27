@@ -11,11 +11,6 @@ module.exports.plugin = exports = function(schema) {
     var limit = 1;
     var populate;
 
-    if (args.options.limit) {
-      limit = args.options.limit;
-      delete args.options.limit;
-    }
-
     if (args.options.populate) {
       populate = args.options.populate;
       delete args.options.populate;
@@ -27,16 +22,25 @@ module.exports.plugin = exports = function(schema) {
       if (err) {
         return args.callback(err, undefined);
       }
-
-      if (limit > num) {
-        limit = num;
-      }
+      args.options.numitem = num;
+      if (args.options.limit > num) {
+        args.options.limit= num;
+        var find = _this.find(args.conditions, args.fields, args.options);
+        if (populate) {
+          find.populate(populate);
+        }
+        find.exec(function(err, doc) {
+          if (err) {
+            return args.callback(err, undefined);
+          }else{
+            args.callback(undefined, doc);}
+      });
+    }else{
       var start, docs = [];
       args.options.limit = 1;
       var i =0;
       var look = function ( ) {
-        i++;
-        if (i<= limit) {
+        if (i< limit) {
           start = Math.floor(Noether.random()*num);
           args.options.skip = start;
           var find = _this.find(args.conditions, args.fields, args.options);
@@ -47,20 +51,23 @@ module.exports.plugin = exports = function(schema) {
             if (err) {
               return args.callback(err, undefined);
             }
-            if (doc.length  ) {
-              if (doc[0].length) {
+            if (doc.length) {
+              if (Object.keys(doc[0]).length) {
                 docs.push(doc[0]);
-              }else{i--;}
-            }else {
-              i--;
+                i++;
             }
+          }
             look();
           });
         }else {
-          return args.callback(undefined, docs);
+          args.callback(undefined, docs);
         }
       };
       look();
+    }
+
+
+
     });
   };
 
@@ -146,13 +153,11 @@ module.exports.r_uniform = function(mu, sigma) {
   return mu - sqrt3 * sigma + _sqrt3 *  Noether.random()  *
    sigma * Math.sin(pi_2 *  Noether.random());
 };
-// the random generater normal with mu and sigma
+// the random generater normal with mu and sigma Box–Muller transform
 module.exports.normal = function (mu,sigma)
 {
 	 var  two_pi = 2.0*3.14159265358979323846;
-
 	var  z0;
-
 	z0 = Math.sqrt(-2.0 * Math.log(Math.random())) * Math.cos(two_pi * Math.random());
 	return z0 * sigma + mu;
 };

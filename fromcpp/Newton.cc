@@ -79,6 +79,10 @@ double  sqrtf(double item, int index){
 
        _array[0]=Handle<Array>::Cast(array->Get(0));
      n= (int) _array[0]->Length();
+     if (n == 0 || m ==0) {
+       gsl_matrix *M = gsl_matrix_calloc(1, 1) ;
+       return M;
+     }
      gsl_matrix *M = gsl_matrix_calloc(m, n) ;
      for (i = 0; i < m; i++) {
        _array[i] = Handle<Array>::Cast(array->Get(i));
@@ -222,7 +226,7 @@ double  sqrtf(double item, int index){
         info.GetReturnValue().Set(num);
       }
       void print_M(gsl_matrix * M){
-        printf("The matrix\n" );
+        printf("<<<<<<<<<=============The matrix is ===============>>>>>>\n" );
         int m = (int ) M->size1,n = (int ) M->size2 ;
         printf("{");
         for (int i = 0; i < m; i++) {
@@ -233,16 +237,27 @@ double  sqrtf(double item, int index){
           printf("|\n");
         }
         printf("}\n");
+        printf("<<<<<<<<<============================>>>>>>\n" );
       }
 
 // the pca analysis, the arguments are (@MatrixData, @LimitToReduce, @StatsArray)
 void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
-    int i,j,n;
+    int i,j,n, m;
     // the array is read from info and stored into matrix M
-    printf("reading matrix\n" );
+     printf("reading matrix\n" );
      gsl_matrix *M = read_matrix(info);
+
      // the size of matrix is read
-      n = (int) M->size2;
+      n = (int) M->size2;  m = (int) M->size1;
+      if (n ==0 || m==0) {
+        printf("There is not data enougth\n" );
+        Local<Value> result;
+          v8::Local<v8::Object> obj = Nan::New<v8::Object>();
+          obj->Set(Nan::New("S_corr").ToLocalChecked(),result);
+          obj->Set(Nan::New("V_trans").ToLocalChecked(),result);
+          // The return object
+          info.GetReturnValue().Set(obj);
+      }
     // Define the vectors Media and Sigma, The last will store
     // the madia and and sigma values to every variable.
     gsl_vector * Media=gsl_vector_calloc(n),
@@ -257,9 +272,10 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
       gsl_vector_set(Media,i,stats_media->Get(i)->NumberValue());
       gsl_vector_set(Sigma,i,stats_sigma->Get(i)->NumberValue());
     }
-    // printf("la matrix antes de normalizar es\n" );
-    // gsl_matrix_fprintf (stdout, M, "%f");
-      printf("normalizing data\n" );
+
+    // A = gsl_matrix_view_array(Sigma->data, Sigma->size,1);
+    // print_M(  &A.matrix);
+      printf("normalazing data\n" );
     normalization(M,Media,Sigma);
     // printf("la matrix despues de normalizar es\n" );
     // gsl_matrix_fprintf (stdout, M, "%f");
@@ -269,9 +285,8 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
     gsl_vector *S = gsl_vector_calloc((size_t) n);
     // The SVD is done
     //gsl_linalg_SV_decomp_jacobi(M,V,S);
-      printf("SVD descompisiton\n" );
-     gsl_linalg_SV_decomp_mod(M, X, V,S, work);
-     print_M(V);
+    printf("SVD descompisiton\n" );
+    gsl_linalg_SV_decomp_mod(M, X, V,S, work);
     double * Sum = new double;
     vnorm(S,Sum);
     int* count= new int;
@@ -282,6 +297,8 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
      gsl_matrix* _V_= gsl_matrix_calloc(V->size1 ,(size_t) *count);
      dim_red( V ,_V_ ,S,_S_,count);
      print_M(_V_);
+     gsl_matrix_view A = gsl_matrix_view_array(_S_->data, _S_->size,1);
+     print_M(  &A.matrix);
     // The object to return are build
     v8::Local<v8::Object> obj = Nan::New<v8::Object>();
     Handle<Array> R_array = Nan::New<v8::Array>((size_t) *count);

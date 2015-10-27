@@ -32,6 +32,7 @@ var Pca_analytic = function(timeupgrade, sizesample, options) {
         if (timeupgrade)    {_this.timeupgrade = timeupgrade;}
         if (sizesample)     {_this.sizesample = sizesample ;}
         if (options)  {_this.options = options;}
+
         uprade_pca(_this.timeupgrade, _this.sizesample, _this.options);
     };
 
@@ -41,14 +42,16 @@ var Pca_analytic = function(timeupgrade, sizesample, options) {
     // the callback receive the p_x function as argument.
     this.pca = function(cb) {
       statsmodel.findOne({}, function function_name(err, stats) {
-        _this.pca_vars.stats =
-        [stats.media, stats.sigma];
-        pcamodel.findOne({}, function(error, pca) {
-          _this.pca_vars.V_T  = pca.V_T_matrix;
-          _this.pca_vars.S    = pca.S_vector;
-          pca = new Pca_analysis(_this.pca_vars.V_T, _this.pca_vars.S, _this.pca_vars.stats);
-          cb(pca.p_x);
-        });
+        if (stats) {
+          _this.pca_vars.stats =
+          [stats.media, stats.sigma];
+          pcamodel.findOne({}, function(error, pca) {
+            _this.pca_vars.V_T  = pca.V_T_matrix;
+            _this.pca_vars.S    = pca.S_vector;
+            pca = new Pca_analysis(_this.pca_vars.V_T, _this.pca_vars.S, _this.pca_vars.stats);
+            cb(pca.p_x);
+          });
+        }  
       });
     };
   };

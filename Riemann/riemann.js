@@ -20,35 +20,39 @@ var Modelstats  = mongoose.model('stats', schemastats);
 var Statsaving = function() {
   this.Modeldata  = Modeldata;
   this.Modelstats  = Modelstats;
+  var _this = this;
   var create = function(tosave, cb) {
     var doc = new this.Modeldata(tosave);
-    this.Modelstats.find({}, function(error, stats0) {
+    _this.Modelstats.find({}, function(error, stats0) {
       var l = doc.data.length;
       var stats = stats0[0];
       if (!stats) {
         stats = {sigma : [], media : {}, N:[]};
-      }
-      var sigma = _.clone(stats.sigma, true),
-      media = _.clone(stats.media, true),
-      N = _.clone(stats.N, true);
-      for (var i = 0; i < l; i++) {
-        if (!N[i]) {N[i] = 0;}
-        if (!sigma[i]) {sigma[i] = 0;}
-        if (!media[i]) {media[i] = 0;}
+        _this.Modelstats.create(stats,cb) ;
+      }else {
+        var sigma = _.clone(stats.sigma, true),
+        media = _.clone(stats.media, true),
+        N = _.clone(stats.N, true);
+        for (var i = 0; i < l; i++) {
+          if (!N[i]) {N[i] = 0;}
+          if (!sigma[i]) {sigma[i] = 0;}
+          if (!media[i]) {media[i] = 0;}
 
-        media[i] = (media[i] * N[i] + doc.data[i]) / (N[i] + 1);
-        sigma[i] = Math.sqrt((sigma[i] * sigma[i] * N[i] +
-        (doc.data[i] - media[i]) * (doc.data[i] - media[i])) /
-        (N[i] + 1));
-        N[i] = N[i] + 1;
+          media[i] = (media[i] * N[i] + doc.data[i]) / (N[i] + 1);
+          sigma[i] = Math.sqrt((sigma[i] * sigma[i] * N[i] +
+          (doc.data[i] - media[i]) * (doc.data[i] - media[i])) /
+          (N[i] + 1));
+          N[i] = N[i] + 1;
+        }
+
+        stats.sigma = sigma;
+        stats.media = media;
+        stats.N = N;
+        stats.save(function() {
+          doc.save(cb);
+        });
       }
 
-      stats.sigma = sigma;
-      stats.media = media;
-      stats.N = N;
-      stats.save(function() {
-        doc.save(cb);
-      });
     });
   };
 

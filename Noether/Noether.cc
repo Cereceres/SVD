@@ -4,7 +4,7 @@
 
 double _rand(){
 	std::srand( std::time(nullptr)); // use current time as seed for random generator
-  return std::rand();
+  return (std::rand()%11111111111)/11111111111;
 }
 
 

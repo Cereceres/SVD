@@ -13,30 +13,9 @@ var _this = module.exports;
 *  boolean that say if datum is saved
 */
 
-function asyncify(syncFn) {
-  var   callback;
-  return function() {
-    var args = Array.prototype.slice.call(arguments);
-    if (typeof args[args.length-1]==='function') {
-      callback = args.pop();
-    }else{callback = undefined;}
-    var result;
-    setImmediate(function() {
-      try {
-        result = syncFn.apply(this, args);
-      } catch (error) {
-        if (callback) {
-          callback(error);
-        }
-      }
-      if (callback) {
-          callback(null, result);
-      }
-    });
-  };
-}
 
-module.exports = asyncify(function(Datum, cb, save) {
+
+module.exports = function(Datum, cb, save) {
   if (save) {
     riemann.create(Datum);
   }
@@ -49,28 +28,28 @@ module.exports = asyncify(function(Datum, cb, save) {
   });
   return _this;
 
-});
+};
 
 /* This function upgrade the pca analysis and save into de DB
 *  The arguments are the time to upgrade, size of sample taken
 *   and finally the options, only the limit to dimension reducing
 */
-module.exports.upgrade = asyncify(function(timeupgrade, sizesample, options) {
+module.exports.upgrade = function(timeupgrade, sizesample, options) {
   curie.upgrade(timeupgrade, sizesample, options);
   return _this;
-});
+};
 /* Stop the upgrade function
 */
-module.exports.stop =asyncify( function() {
+module.exports.stop = function() {
   curie.stop();
   return _this;
-});
+};
 /* Save the datum into de DB
 */
-module.exports.save = asyncify(function(Datum) {
+module.exports.save = function(Datum) {
   riemann.create(Datum);
   return _this;
-});
+};
 /*@Constructor that build a anormal watcher datum.
 * The arguments are the dist value to discard a datum,
 * the callback receive true/false is the datum is anormal or not.
@@ -98,7 +77,7 @@ module.exports.anormalDatum = function(dist, callback) {
 };
 
 
-  module.exports.initall =asyncify( function(stats,cb) {
+  module.exports.initall =function(stats,cb) {
       if (!stats) {
         stats = {sigma : [], media : [], N:[]};
       }
@@ -111,28 +90,31 @@ module.exports.anormalDatum = function(dist, callback) {
         return 1;
       }).trans();
       riemann.Modelstats.find({},function (error,stats) {
-        if(!stats.length){
+        console.log('stats=',stats);
+        if(!stats){
           riemann.Modelstats.create({sigma : sigma, media:media , N:N},function (err) {
             if (err) {console.log('error on create stats:',err);}
 
             Riemann.modelof_pca_system().find({},function (arr,pca) {
               if (arr) {
                 console.log('error on create stats:',arr);}
-              if(!pca.length){
+              if(!pca){
                 Riemann.modelof_pca_system().create({V_T_matrix : V_T.array, S_vector : S.array[0]},cb);
               }
             });
           });
         }else {
           Riemann.modelof_pca_system().find({},function (arr,pca) {
-            if (!pca.length) {
+            if (!pca) {
               Riemann.modelof_pca_system().create({V_T_matrix : V_T.array, S_vector : S.array[0]},cb);
             } else{
-              cb();
+              if (typeof cb === 'function') {
+                  cb();
+              }
             }
           });
         }
       });
       return _this;
 
-  	});
+  	};
