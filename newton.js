@@ -90,22 +90,24 @@ module.exports.anormalDatum = function(dist, callback) {
         return 1;
       }).trans();
       riemann.Modelstats.find({},function (error,stats) {
-        console.log('stats=',stats);
-        if(!stats){
-          riemann.Modelstats.create({sigma : sigma, media:media , N:N},function (err) {
+        if (error) {console.log('error on find stats:',error);}
+        if(!stats.length){
+          riemann.Modelstats.create({sigma : sigma, media:media , N:N},
+            function (err) {
             if (err) {console.log('error on create stats:',err);}
-
             Riemann.modelof_pca_system().find({},function (arr,pca) {
-              if (arr) {
-                console.log('error on create stats:',arr);}
-              if(!pca){
+              if (arr) {console.log('error on find pca :',arr);}
+              if(!pca.length){
                 Riemann.modelof_pca_system().create({V_T_matrix : V_T.array, S_vector : S.array[0]},cb);
+              }else{
+                if (typeof cb === 'function') {cb();}
               }
             });
           });
         }else {
           Riemann.modelof_pca_system().find({},function (arr,pca) {
-            if (!pca) {
+            if (arr) {console.log('error on find pca:',arr);}
+            if (!pca.length) {
               Riemann.modelof_pca_system().create({V_T_matrix : V_T.array, S_vector : S.array[0]},cb);
             } else{
               if (typeof cb === 'function') {

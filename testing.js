@@ -3,38 +3,53 @@
 //testing the methos exported from Newton
 var Newton = require('./newton');
 var newton =new Newton.anormalDatum(0.20);
-var fraud  = newton.isnormal,i=0,j=0,_sigma,_media;
+var fraud  = newton.isnormal,i=0,j=0,_sigma=2,_media=10;
 var Noether = require('./Noether/noether');
-var random = Noether.random;
-var rand = Noether.normal;
-var cb =  function(its) {
+var rand = Noether.normal, datafake,cb,Datum;
+var bayes = require('./Bayes/bayes');
+
+
+
+setInterval(function () {
+  _media = Math.pow(10,4*Math.random()) *Math.random();
+  _sigma = _media/Math.pow(10,2*Math.random()) *Math.random();
+},3000);
+
+
+
+function datafake() {
+  console.log('llamada fake');
+  Datum = [rand(_media,_sigma), Math.random()*rand(_media,_sigma),
+    Math.random()*rand(_media,_sigma),Math.random()*rand(_media,_sigma)];
+    console.log('Datum=',Datum);
+  fraud(Datum, cb,true);
+}
+
+cb =  function(its) {
   if (!its) {
     i++ ;
   }else {
     j++;
   }
   console.log('fraude=', !its, '% de fraudes =',i/(i+j)+'%');
+  datafake();
 };
-
-setInterval(function () {
-  _media = random(200,800);
-  _sigma = _media/8 *Math.random();
-},8000);
 
 function f() {
   console.log('upgrading with newton');
-  Newton.upgrade(10000,100000,{limit : 0.8});
-  setInterval(function () {
-    fraud([rand(_media,_sigma), Math.random()*rand(_media,_sigma),
-      Math.random()*rand(_media,_sigma),Math.random()*rand(_media,_sigma)], cb);
-  },100);
+  Newton.upgrade(1000,1000,{limit : 0.8});
+  console.log('haciendo llamdas fake');
+  datafake();
 }
+function fakecalls(ndata,nvar,ncorr){
+  bayes(ndata,nvar,ncorr,function () {
+    fakecalls(ndata,nvar,ncorr);
+  });
 
+}
 Newton.initall({sigma : [20,38,66,122],media:[700,156,665.7,1400], N:[]},function () {
   console.log('Generaing the data with bayes');
-  require('./Bayes/bayes')(10000000, 4,2,function () {
-    console.log('Bayes is done');
-  });
+  fakecalls(5000, 4,2);
   console.log('Doing calls of random data');
   f();
 });

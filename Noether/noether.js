@@ -1,7 +1,6 @@
 'use strict';
-var Normal = require('./build/Release/Noether').random;
 var Noether = Math;
-var sqrt3 = Math.sqrt(3), _sqrt3 = 2 * sqrt3, pi_2 = Math.PI / 2;
+var sqrt3 = Math.sqrt(3), _sqrt3 = 2 * sqrt3, pi_2 = Math.PI / 2;var start, docs = [];
 
 //Noether take a sample from DB of observations
 module.exports.plugin = exports = function(schema) {
@@ -19,12 +18,14 @@ module.exports.plugin = exports = function(schema) {
     var _this = this;
 
     _this.count(args.conditions, function(err, num) {
+
       if (err) {
         return args.callback(err, undefined);
       }
       args.options.numitem = num;
       if (args.options.limit > num) {
         args.options.limit= num;
+        
         var find = _this.find(args.conditions, args.fields, args.options);
         if (populate) {
           find.populate(populate);
@@ -36,7 +37,7 @@ module.exports.plugin = exports = function(schema) {
             args.callback(undefined, doc);}
       });
     }else{
-      var start, docs = [];
+      limit = args.options.limit ;
       args.options.limit = 1;
       var i =0;
       var look = function ( ) {
@@ -54,6 +55,7 @@ module.exports.plugin = exports = function(schema) {
             if (doc.length) {
               if (Object.keys(doc[0]).length) {
                 docs.push(doc[0]);
+
                 i++;
             }
           }
@@ -61,6 +63,7 @@ module.exports.plugin = exports = function(schema) {
           });
         }else {
           args.callback(undefined, docs);
+          docs=[];
         }
       };
       look();

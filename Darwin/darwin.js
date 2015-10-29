@@ -8,6 +8,9 @@ var statsmodel = riemann.Modelstats;
 var samplig = require('../Maxwell/maxwell').sample;
 var pca;
 
+
+
+
 // make the stats into de data to generate
 // the pca_system into the DB
 var pca_sample = function(timeupgrade, sizesample, options) {
@@ -18,29 +21,34 @@ var pca_sample = function(timeupgrade, sizesample, options) {
   var tostop = setInterval(function() {
     // the sample is taken
     samplig(sizesample, function(Sample) {
+
+      if (!Sample.length) {return ;}
+      if (Sample.length) {if (Sample.length <= Sample[0].length) {
+        return ;
+      }}
+    
       // find the stats into de DB
       statsmodel.findOne({}, function function_name(err, stats) {
         if (err) {console.log('Error on findOne stats', err);}
-        if (!Sample.length) { console.log('There is not Sample  enougth');return;}
-        if (Sample.length) { if (Sample[0].length> Sample.length) { return;  }}
         // with the sample and stats make the pca analysis
-        pca = gsl_pca(Sample, limit, [stats.media, stats.sigma]);
-        if ( !pca.S_corr || !pca.V_trans ) {console.log('Pca is not made correctly');return ;}
-        pcamodel.findOneAndUpdate({}, { V_T_matrix: pca.V_trans, S_vector: pca.S_corr },{new : true,upsert: true}, function(error,doc) {
-          // if the pca doc does not exist, ti creates
-          if(!doc){pcamodel.create({ V_T_matrix: pca.V_trans, S_vector: pca.S_corr },function (arr) {
-            if (arr) {
-              console.log('Error on create de PCA', arr);
+        if (stats){
+          pca = gsl_pca(Sample, limit, [stats.media, stats.sigma]);
+          pcamodel.findOneAndUpdate({}, { V_T_matrix: pca.V_trans, S_vector: pca.S_corr },{new : true,upsert: true}, function(error,doc) {
+            // if the pca doc does not exist, ti creates
+            if(!doc){pcamodel.create({ V_T_matrix: pca.V_trans, S_vector: pca.S_corr },function (arr) {
+              if (arr) {
+                console.log('Error on create de PCA', arr);
+              }
+              console.log('PCA is created');
+            });
+            } else{
+              if (error) {
+                console.log('Error on update  PCA', error);
+              }
+              console.log('matrix is upgrade');
             }
-            console.log('PCA is created');
           });
-          } else{
-            if (error) {
-              console.log('Error on update  PCA', error);
-            }
-            console.log('matrix is upgrade');
-          }
-        });
+        }
       });
     });
   }, timeupgrade);

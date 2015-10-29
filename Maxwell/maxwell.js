@@ -18,6 +18,7 @@ var options = { limit: 0 };
       res.forEach(function(item) {
         if (item.data.length>0) {
           A.push(item.data);
+          
         }
       });
         cb(A);

@@ -125,11 +125,11 @@ double  sqrtf(double item, int index){
 //The function that shift the datas to media value and normalize to sigma
  void normalization(gsl_matrix * M, gsl_vector * Media, gsl_vector * Sigma){
    int column = (int) M->size2,
-   m= (int) M->size1,i; double m_sqrt= sqrt(m);
+   m= (int) M->size1,i; double m_sqrt= (double) m;
    gsl_vector_view   Column[column] ;
    double media = 0, sigma = 0, _sigma=1;
-   gsl_vector *_Ident=gsl_vector_alloc(m);
-   gsl_vector *Ident=gsl_vector_alloc(m);
+   gsl_vector *_Ident=  gsl_vector_alloc(m);
+   gsl_vector *Ident=   gsl_vector_alloc(m);
    gsl_vector_set_all(_Ident, 1);
    gsl_vector_set_all (Ident, 1);
    for ( i = 0; i < column; i++) {
@@ -138,7 +138,8 @@ double  sqrtf(double item, int index){
     media = gsl_vector_get(Media, (size_t) i);
     sigma = gsl_vector_get(Sigma, (size_t) i);
      // The sigma^-1 is calculated
-     _sigma = 1/sigma/m_sqrt;
+     _sigma = 1/sigma;
+     _sigma = _sigma/m_sqrt;
      gsl_vector_scale(Ident,media);
      // the measures are translated where the media es zero
      gsl_vector_sub(&Column[i].vector, Ident) ;
@@ -242,7 +243,7 @@ double  sqrtf(double item, int index){
 
 // the pca analysis, the arguments are (@MatrixData, @LimitToReduce, @StatsArray)
 void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
-    int i,j,n, m;
+    int i,j,n, m; gsl_matrix_view A;
     // the array is read from info and stored into matrix M
      printf("reading matrix\n" );
      gsl_matrix *M = read_matrix(info);
@@ -250,13 +251,14 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
      // the size of matrix is read
       n = (int) M->size2;  m = (int) M->size1;
       if (n ==0 || m==0) {
-        printf("There is not data enougth\n" );
-        Local<Value> result;
+        printf("There is not data enougth  for PCA\n" );
+        v8::Local<v8::Number> num = Nan::New(0);
           v8::Local<v8::Object> obj = Nan::New<v8::Object>();
-          obj->Set(Nan::New("S_corr").ToLocalChecked(),result);
-          obj->Set(Nan::New("V_trans").ToLocalChecked(),result);
+          obj->Set(Nan::New("S_corr").ToLocalChecked(),num);
+          obj->Set(Nan::New("V_trans").ToLocalChecked(),num);
           // The return object
           info.GetReturnValue().Set(obj);
+
       }
     // Define the vectors Media and Sigma, The last will store
     // the madia and and sigma values to every variable.
@@ -270,7 +272,7 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
     Handle<Array> stats_sigma=Handle<Array>::Cast(stats->Get(1));
     for (i = 0; i < n; i++) {
       gsl_vector_set(Media,i,stats_media->Get(i)->NumberValue());
-      gsl_vector_set(Sigma,i,stats_sigma->Get(i)->NumberValue());
+      gsl_vector_set(Sigma,i,stats_sigma->Get(i)->NumberValue() );
     }
 
     // A = gsl_matrix_view_array(Sigma->data, Sigma->size,1);
@@ -287,17 +289,28 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
     //gsl_linalg_SV_decomp_jacobi(M,V,S);
     printf("SVD descompisiton\n" );
     gsl_linalg_SV_decomp_mod(M, X, V,S, work);
+    int l =((int) S->size);
+    for ( i = 0; i < l; i++) {
+      S->data[i] = sqrt(S->data[i]);
+    }
+    A = gsl_matrix_view_array(S->data, S->size,1);
+    print_M(  &A.matrix);
     double * Sum = new double;
     vnorm(S,Sum);
+    printf("la suma toatal es %f\n",*Sum );
     int* count= new int;
     // The limite for counting variables is read.
     double _limit = info[1]->NumberValue();
+    // count of number of principal variables
     couting_vec(S,_limit,*Sum, count);
+    printf("la cuenta es %d y el limite es%f \n",*count ,_limit);
      gsl_vector* _S_ = gsl_vector_calloc((size_t) *count);
      gsl_matrix* _V_= gsl_matrix_calloc(V->size1 ,(size_t) *count);
      dim_red( V ,_V_ ,S,_S_,count);
+     printf("print a _V_\n");
      print_M(_V_);
-     gsl_matrix_view A = gsl_matrix_view_array(_S_->data, _S_->size,1);
+     printf("print a _S_\n");
+      A = gsl_matrix_view_array(_S_->data, _S_->size,1);
      print_M(  &A.matrix);
     // The object to return are build
     v8::Local<v8::Object> obj = Nan::New<v8::Object>();
