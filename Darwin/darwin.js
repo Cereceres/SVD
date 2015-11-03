@@ -26,27 +26,19 @@ var pca_sample = function(timeupgrade, sizesample, options) {
       if (Sample.length) {if (Sample.length <= Sample[0].length) {
         return ;
       }}
-    
+
       // find the stats into de DB
       statsmodel.findOne({}, function function_name(err, stats) {
         if (err) {console.log('Error on findOne stats', err);}
         // with the sample and stats make the pca analysis
         if (stats){
           pca = gsl_pca(Sample, limit, [stats.media, stats.sigma]);
-          pcamodel.findOneAndUpdate({}, { V_T_matrix: pca.V_trans, S_vector: pca.S_corr },{new : true,upsert: true}, function(error,doc) {
-            // if the pca doc does not exist, ti creates
-            if(!doc){pcamodel.create({ V_T_matrix: pca.V_trans, S_vector: pca.S_corr },function (arr) {
-              if (arr) {
-                console.log('Error on create de PCA', arr);
-              }
-              console.log('PCA is created');
-            });
-            } else{
-              if (error) {
-                console.log('Error on update  PCA', error);
-              }
-              console.log('matrix is upgrade');
-            }
+          pcamodel.findOneAndUpdate({}, { V_T_matrix: pca.V_trans, S_vector: pca.S_corr },{new : true,upsert: true}, function(error) {
+            // if the pca doc does not exist, is created
+          if (error) {
+            console.log('error on update pca :',error);}
+
+
           });
         }
       });

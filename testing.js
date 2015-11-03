@@ -13,15 +13,14 @@ var bayes = require('./Bayes/bayes');
 setInterval(function () {
   _media = Math.pow(10,4*Math.random()) *Math.random();
   _sigma = _media/Math.pow(10,2*Math.random()) *Math.random();
-},3000);
+},10000);
 
 
 
 function datafake() {
-  console.log('llamada fake');
+
   Datum = [rand(_media,_sigma), Math.random()*rand(_media,_sigma),
     Math.random()*rand(_media,_sigma),Math.random()*rand(_media,_sigma)];
-    console.log('Datum=',Datum);
   fraud(Datum, cb,true);
 }
 
@@ -31,7 +30,7 @@ cb =  function(its) {
   }else {
     j++;
   }
-  console.log('fraude=', !its, '% de fraudes =',i/(i+j)+'%');
+  console.log('fraude=', !its, '% de fraudes =',100*i/(i+j)+'% with #=',i);
   datafake();
 };
 

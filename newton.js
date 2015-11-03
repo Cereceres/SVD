@@ -86,37 +86,38 @@ module.exports.anormalDatum = function(dist, callback) {
       var N = stats.N;
       var n = media.length ;
       var V_T = new AL.matrix.diagonal(n,n);
-      var S  = new AL.matrix.create(n,1,function () {
-        return 1;
+      var S  = new AL.matrix.create(n,1,function (i) {
+        return sigma[i];
       }).trans();
-      riemann.Modelstats.find({},function (error,stats) {
-        if (error) {console.log('error on find stats:',error);}
-        if(!stats.length){
-          riemann.Modelstats.create({sigma : sigma, media:media , N:N},
-            function (err) {
-            if (err) {console.log('error on create stats:',err);}
-            Riemann.modelof_pca_system().find({},function (arr,pca) {
-              if (arr) {console.log('error on find pca :',arr);}
-              if(!pca.length){
-                Riemann.modelof_pca_system().create({V_T_matrix : V_T.array, S_vector : S.array[0]},cb);
-              }else{
-                if (typeof cb === 'function') {cb();}
-              }
-            });
-          });
-        }else {
-          Riemann.modelof_pca_system().find({},function (arr,pca) {
-            if (arr) {console.log('error on find pca:',arr);}
-            if (!pca.length) {
-              Riemann.modelof_pca_system().create({V_T_matrix : V_T.array, S_vector : S.array[0]},cb);
-            } else{
-              if (typeof cb === 'function') {
-                  cb();
-              }
-            }
-          });
-        }
+      var promise = new Promise(function (full,rej) {
+        riemann.Modelstats.findOne({},function (error,stats) {
+          if (error) {console.log('error on find stats:',error);}
+          if(!stats){rej();
+          }else { full();}
+        });
       });
+      promise.then(
+        function _full() {
+      },function _rej() {
+        riemann.Modelstats.create({sigma : sigma, media:media , N:N},
+          function (err,stats_created) {
+          if (err) {console.log('error on create stats:',err);}else{
+            console.log('stats created into initall:',stats_created);
+          }
+        });
+      }).then(function () {
+        Riemann.modelof_pca_system().findOne({},function (arr,pca) {
+          if (arr) {console.log('error on find pca:',arr);}
+          if (!pca) {
+            Riemann.modelof_pca_system().create({V_T_matrix : V_T.array, S_vector : S.array[0]},cb);
+          } else{
+            if (typeof cb === 'function') {
+                cb();
+            }
+          }
+        });
+      });
+
       return _this;
 
   	};

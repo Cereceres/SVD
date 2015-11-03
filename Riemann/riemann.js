@@ -17,8 +17,22 @@ var Modeldata  = mongoose.model('data', schemadata);
 var Modelstats  = mongoose.model('stats', schemastats);
 
 
+function upgradestats(stats){
+    if(stats.count<doc.data.length) {
+      var i=stats.count;
+    if (!stats.N[i]) {stats.N[i] = 0;}
+    if (!stats.sigma[i]) {stats.sigma[i] = 0;}
+    if (!stats.media[i]) {stats.media[i] = 0;}
+    stats.media[i] = (stats.media[i] * stats.N[i] + stats.doc.data[i]) / (stats.N[i] + 1);
+    stats.sigma[i] = Math.sqrt((stats.sigma[i] * stats.sigma[i] * stats.N[i] +
+    (stats.doc.data[i] - stats.media[i]) * (stats.doc.data[i] - stats.media[i])) /
+    (stats.N[i] + 1));
+    stats.N[i] = stats.N[i]+1;
+    stats.count= stats.count+1;
+    upgradestats(stats);
+  }
 
-
+}
 // Riemann module make the stats into de data when the doc is saved
 var Statsaving = function() {
   this.Modeldata  = Modeldata;
@@ -26,44 +40,42 @@ var Statsaving = function() {
    _this = this;
   var create = function(tosave, cb) {
     var promise = new Promise(function (fulfill, reject) {
-        doc = new this.Modeldata({data : tosave});
+
+        doc = new _this.Modeldata({data : tosave});
         l = doc.data.length;
-        _this.Modelstats.find({}, function(error, stats) {
+
+        _this.Modelstats.findOne({}, function(error, stats) {
         if (error) {
         console.log('error on find stats into Reamann',error);
         }
-        if(!stats[0]){reject();}else{fulfill(stats[0]);}
+
+        if(!stats){reject();}else{fulfill(stats);}
       });
     }
     );
     promise.then(function (stats) {
-      var sigma = _.clone(stats.sigma, true),
-      media = _.clone(stats.media, true),
-      N = _.clone(stats.N, true);
-      for (var i = 0; i < l; i++) {
-        if (!N[i]) {N[i] = 0;}
-        if (!sigma[i]) {sigma[i] = 0;}
-        if (!media[i]) {media[i] = 0;}
-        media[i] = (media[i] * N[i] + doc.data[i]) / (N[i] + 1);
-        sigma[i] = Math.sqrt((sigma[i] * sigma[i] * N[i] +
-        (doc.data[i] - media[i]) * (doc.data[i] - media[i])) /
-        (N[i] + 1));
-        N[i] = N[i]+1;
-      }
-      stats.sigma = sigma;
-      stats.media = media;
-      stats.N = N;
-      stats.save(function(err) {
-        if (err) {
-              console.log('error to save stats=',err);
+      var sigma = _.clone(stats.sigma,true),
+      media = _.clone(stats.media,true),
+      N = _.clone(stats.N,true);
+      var _stats ={sigma:sigma,media:media,N:N,doc:doc,count:0};
+      upgradestats(_stats);
+      stats.sigma = _stats.sigma;
+      stats.media = _stats.media;
+      stats.N = _stats.N;
+      stats.save({validateBeforeSave:true},function(err,st) {
+        if (err) {  console.log('error to save stats=',err);}else{
+          console.log('stats saved=',st);
         }
-        doc.save(cb);
+      }).then(function () {doc.save(cb);});
+    },
+    function () {
+      doc.save().then(function () {
+      _this.Modelstats.create({sigma:[],media:[],N:[]},function (_error) {
+        if (_error) {  console.log('error to create stats=',_error);}
+      }).then(cb);
       });
-    },function () {
-      // body...
     });
   };
-
   this.create = create.bind(this);
 };
 
@@ -79,3 +91,6 @@ var modelof_pca_system = function() {
 
 Statsaving.modelof_pca_system = modelof_pca_system;
 module.exports = Statsaving;
+// new Statsaving().create([3,7,6,4],function () {
+//   console.log('guardado');
+// });
