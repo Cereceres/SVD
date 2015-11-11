@@ -16,7 +16,7 @@ module.exports = function (n_0,n_k,cb) {
 
 var a=1;
 var start = new Date();
-  module.exports(0,10000,function (i) {
+  module.exports(0,1000000,function (i) {
   Math.log(i);
   });
 var time = new Date() - start;
@@ -24,7 +24,7 @@ console.log('the time for recursive =',time/1000);
 
 a =1;
 start = new Date();
-  for (var i = 0; i < 10000; i++) {
+  for (var i = 0; i < 1000000; i++) {
 Math.log(i);
   }
 time = new Date() - start;
