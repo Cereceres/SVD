@@ -1,55 +1,69 @@
 'use strict';
-var newton = require('bindings')('newton');
-var gsl_pca = newton.pca;
-var Riemann = require('../Riemann/riemann');
-var pcamodel = Riemann.modelof_pca_system();
-var riemann = new Riemann();
-var statsmodel = riemann.Modelstats;
-var samplig = require('../Maxwell/maxwell').sample;
-var pca;
-
-
-
-
+let newton = require( 'bindings' )( 'newton' );
+let gsl_pca = newton.pca;
+let Riemann = require( '../Riemann/riemann' );
+let pcamodel = Riemann.modelof_pca_system( );
+let riemann = new Riemann( );
+let debug = require( '../debug' )
+let statsmodel = riemann.Modelstats;
+let samplig = require( '../Maxwell/maxwell' ).sample;
+let pca;
 // make the stats into de data to generate
 // the pca_system into the DB
-var pca_sample = function(timeupgrade, sizesample, options) {
-  options = options || {limit: 0.75};
-  var limit = options.limit;
-  console.log('upgrading from darwin');
+let pca_sample = function ( timeupgrade, sizesample, options ) {
+  options = options || {
+    limit: 0.75
+  };
+  let limit = options.limit;
+  debug.Darwin.info( 'upgrading from darwin' );
   // save the setIntervalID to stop it.
-  var tostop = setInterval(function() {
+  let tostop = setInterval( function ( ) {
     // the sample is taken
-    samplig(sizesample, function(Sample) {
-
-      if (!Sample.length) {return ;}
-      if (Sample.length) {if (Sample.length <= Sample[0].length) {
-        return ;
-      }}
+    samplig( sizesample, function ( Sample ) {
+      debug.Darwin.info( 'sample found is:', Sample.length )
+      if ( !Sample.length ) {
+        return;
+      }
+      if ( Sample.length ) {
+        if ( Sample.length <= Sample[ 0 ].length ) {
+          return;
+        }
+      }
 
       // find the stats into de DB
-      statsmodel.findOne({}, function function_name(err, stats) {
-        if (err) {console.log('Error on findOne stats', err);}
-        // with the sample and stats make the pca analysis
-        if (stats){
-          pca = gsl_pca(Sample, limit, [stats.media, stats.sigma]);
-          pcamodel.findOneAndUpdate({}, { V_T_matrix: pca.V_trans, S_vector: pca.S_corr },{new : true,upsert: true}, function(error) {
-            // if the pca doc does not exist, is created
-          if (error) {
-            console.log('error on update pca :',error);}
-
-
-          });
+      statsmodel.findOne( {}, function function_name( err, stats ) {
+        if ( err || stats ) {
+          debug.Darwin.error( 'Error on findOne stats', err );
         }
-      });
-    });
-  }, timeupgrade);
+        // with the sample and stats make the pca analysis
+        if ( stats ) {
+          debug.Darwin.info( 'the stats found is:', stats )
+          pca = gsl_pca( Sample, limit, [ stats.media, stats.sigma ] );
+          pcamodel.findOneAndUpdate( {}, {
+            V_T_matrix: pca.V_trans,
+            S_vector: pca.S_corr
+          }, {
+            new: true,
+            upsert: true
+          }, function ( error ) {
+            // if the pca doc does not exist, is created
+            if ( error ) {
+              debug.Darwin.error( 'error on update pca :',
+                error );
+            }
+
+
+          } );
+        }
+      } );
+    } );
+  }, timeupgrade );
 
   pca_sample.tostop = tostop;
 };
 // bind the stop method
-pca_sample.stop = function() {
-  clearInterval(pca_sample.tostop);
+pca_sample.stop = function ( ) {
+  clearInterval( pca_sample.tostop );
 };
 
-module.exports.pca_sample  = pca_sample;
+module.exports.pca_sample = pca_sample;
