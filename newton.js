@@ -20,6 +20,7 @@ _this = function ( Datum, cb, save ) {
   if ( save ) {
     riemann.create( Datum );
   }
+
   curie.pca( function ( p_x ) {
     P = p_x( Datum );
     if ( cb ) {
