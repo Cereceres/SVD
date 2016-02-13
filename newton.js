@@ -62,8 +62,13 @@ _this.save = function ( Datum ) {
  * the callback receive true/false is the datum is anormal or not.
  */
 _this.anormalDatum = function ( dist, callback ) {
-  if ( callback ) {
+  if ( typeof callback === 'function' ) {
     this.cb = callback;
+  } else {
+    this.cb = function ( its ) {
+      debug.info( 'anormalDatum:', its )
+      return this
+    }
   }
 
   this.dist = dist;
@@ -73,14 +78,14 @@ _this.anormalDatum = function ( dist, callback ) {
     if ( itsaved === undefined ) {
       itsaved = true;
     }
-    if ( !cb ) {
-      cb = __this.cb;
+    if ( typeof cb === 'function' ) {
+      __this.cb = cb
     }
     _this( Datum, function ( P ) {
       if ( __this.dist > P ) {
-        cb( false );
+        __this.cb( false );
       } else {
-        cb( true );
+        __this.cb( true );
       }
     }, itsaved );
 
