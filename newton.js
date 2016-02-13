@@ -39,7 +39,7 @@ _this = function ( Datum, cb, save ) {
 
 /* This function upgrade the pca analysis and save into de DB
  *  The arguments are the time to upgrade, size of sample taken
- *   and finally the options, only the limit to dimension reducing
+ *  and finally the options, only the limit to dimension reducing
  */
 _this.upgrade = function ( timeupgrade, sizesample, options ) {
   curie.upgrade( timeupgrade, sizesample, options );
