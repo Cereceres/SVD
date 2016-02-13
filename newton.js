@@ -18,15 +18,22 @@ let AL = new require( 'nsolvejs' ).AL;
 
 _this = function ( Datum, cb, save ) {
   if ( save ) {
-    riemann.create( Datum );
+    riemann.create( Datum, function ( ) {
+      curie.pca( function ( p_x ) {
+        P = p_x( Datum );
+        if ( cb ) {
+          cb( P );
+        }
+      } );
+    } );
+  } else {
+    curie.pca( function ( p_x ) {
+      P = p_x( Datum );
+      if ( cb ) {
+        cb( P );
+      }
+    } );
   }
-
-  curie.pca( function ( p_x ) {
-    P = p_x( Datum );
-    if ( cb ) {
-      cb( P );
-    }
-  } );
   return _this;
 };
 
