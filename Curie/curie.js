@@ -1,17 +1,17 @@
 'use strict';
 
 //Curie calculate the probability of data given
-var newton = require( 'bindings' )( 'newton' );
-var Riemann = require( '../Riemann/riemann' );
-var pcamodel = Riemann.modelof_pca_system( );
-var riemann = new Riemann( );
+let newton = require( 'bindings' )( 'newton' );
+let Riemann
+let riemann
+let pcamodel
 let debug = require( '../debug' )
-var statsmodel = riemann.Modelstats;
-var p_x = newton.p_x;
-var uprade_pca = require( '../Darwin/darwin' ).pca_sample;
+let statsmodel
+let p_x = newton.p_x;
+let uprade_pca = require( '../Darwin/darwin' ).pca_sample;
 
 
-var Pca_analysis = function ( V_matrix, S_vector, _stats ) {
+let Pca_analysis = function ( V_matrix, S_vector, _stats ) {
   this.V = V_matrix;
   this.S = S_vector;
   this.stats = _stats;
@@ -21,8 +21,12 @@ var Pca_analysis = function ( V_matrix, S_vector, _stats ) {
 
 };
 
-var Pca_analytic = function ( timeupgrade, sizesample, options ) {
-  this.pca_vars = {
+let Pca_analytic = function ( timeupgrade, sizesample, options, mongoose ) {
+  Riemann = require( '../Riemann/riemann' );
+  riemann = new Riemann( mongoose );
+  pcamodel = riemann.modelof_pca_system( );
+  statsmodel = riemann.Modelstats;
+  this.pca_lets = {
     V_T: [ ],
     S: [ ],
     stats: [ ]
@@ -37,7 +41,7 @@ var Pca_analytic = function ( timeupgrade, sizesample, options ) {
   if ( options ) {
     this.options = options;
   }
-  var _this = this;
+  let _this = this;
   // the upgrade method
   this.upgrade = function ( timeupgrade, sizesample, options ) {
     if ( timeupgrade ) {
@@ -64,13 +68,13 @@ var Pca_analytic = function ( timeupgrade, sizesample, options ) {
       }
       if ( stats ) {
         debug.Curie.info( 'the stats found was:', stats )
-        _this.pca_vars.stats = [ stats.media, stats.sigma ];
+        _this.pca_lets.stats = [ stats.media, stats.sigma ];
         pcamodel.findOne( {}, function ( error, pca ) {
           if ( pca ) {
-            _this.pca_vars.V_T = pca.V_T_matrix;
-            _this.pca_vars.S = pca.S_vector;
-            pca = new Pca_analysis( _this.pca_vars.V_T, _this.pca_vars
-              .S, _this.pca_vars.stats );
+            _this.pca_lets.V_T = pca.V_T_matrix;
+            _this.pca_lets.S = pca.S_vector;
+            pca = new Pca_analysis( _this.pca_lets.V_T, _this.pca_lets
+              .S, _this.pca_lets.stats );
             cb( pca.p_x );
           }
 

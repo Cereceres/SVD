@@ -1,22 +1,8 @@
 'use strict';
-let mongoose = require( '../mongoose' );
-let debug = require( '../debug' )
-let Schema = mongoose.Schema;
 let random = require( '../Noether/noether' ).plugin;
 let _ = require( 'lodash' ),
   _this, l, doc;
-let schemadata = new Schema( {
-  data: Array,
-} );
-let schemastats = new Schema( {
-  sigma: Array,
-  media: Array,
-  N: Array,
-} );
-schemadata.plugin( random );
-schemastats.plugin( random );
-let Modeldata = mongoose.model( 'data', schemadata );
-let Modelstats = mongoose.model( 'stats', schemastats );
+
 
 
 function upgradestats( stats ) {
@@ -44,7 +30,34 @@ function upgradestats( stats ) {
   }
 }
 // Riemann module make the stats into de data when the doc is saved
-let Statsaving = function ( ) {
+let Statsaving = function ( mongoose ) {
+  mongoose = mongoose || require( '../mongoose' );
+  let Schema = mongoose.Schema;
+  // Model of pca system
+  let schema = new Schema( {
+    V_T_matrix: Array,
+    S_vector: Array,
+  } );
+  schema.plugin( random );
+  let modelof_pca_system = function ( ) {
+    return mongoose.model( 'pca_system', schema );
+  };
+  this.modelof_pca_system = modelof_pca_system;
+  let debug = require( '../debug' )
+
+  let schemadata = new Schema( {
+    data: Array,
+  } );
+  let schemastats = new Schema( {
+    sigma: Array,
+    media: Array,
+    N: Array,
+  } );
+  schemadata.plugin( random );
+  schemastats.plugin( random );
+  let Modeldata = mongoose.model( 'data', schemadata );
+  let Modelstats = mongoose.model( 'stats', schemastats );
+
   this.Modeldata = Modeldata;
   this.Modelstats = Modelstats;
   _this = this;
@@ -128,14 +141,4 @@ let Statsaving = function ( ) {
   };
   this.create = create.bind( this );
 };
-// Model of pca system
-let schema = new Schema( {
-  V_T_matrix: Array,
-  S_vector: Array,
-} );
-schema.plugin( random );
-let modelof_pca_system = function ( ) {
-  return mongoose.model( 'pca_system', schema );
-};
-Statsaving.modelof_pca_system = modelof_pca_system;
 module.exports = Statsaving;

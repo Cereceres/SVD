@@ -1,16 +1,20 @@
 'use strict';
 let newton = require( 'bindings' )( 'newton' );
 let gsl_pca = newton.pca;
-let Riemann = require( '../Riemann/riemann' );
-let pcamodel = Riemann.modelof_pca_system( );
-let riemann = new Riemann( );
+let Riemann
+let pcamodel
+let riemann
 let debug = require( '../debug' )
-let statsmodel = riemann.Modelstats;
+let statsmodel
 let samplig = require( '../Maxwell/maxwell' ).sample;
 let pca;
 // make the stats into de data to generate
 // the pca_system into the DB
-let pca_sample = function ( timeupgrade, sizesample, options ) {
+let pca_sample = function ( timeupgrade, sizesample, options, mongoose ) {
+  Riemann = require( '../Riemann/riemann' );
+  riemann = new Riemann( mongoose );
+  pcamodel = riemann.modelof_pca_system( );
+  statsmodel = riemann.Modelstats;
   options = options || {
     limit: 0.75
   };

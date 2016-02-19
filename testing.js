@@ -1,7 +1,8 @@
 'use strict';
-
-//testing the methos exported from Newton
+let mongoose = require( './mongoose' )
+  //testing the methos exported from Newton
 var Newton = require( './newton' );
+
 var newton = new Newton.anormalDatum( 0.20 );
 var fraud = newton.isnormal,
   i = 0,

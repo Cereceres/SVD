@@ -4,8 +4,8 @@
 let Riemann = new require( '../Riemann/riemann' );
 let AL = require( 'nsolvejs' ).AL;
 let debug = require( '../debug' )
-let riemann = new Riemann( );
-let create = riemann.create;
+let riemann
+let create
 let Noether = require( '../Noether/noether' );
 let random = Noether.random;
 let rand = Noether.normal;
@@ -72,8 +72,10 @@ function asyncify( syncFn ) {
   };
 }
 
-module.exports = asyncify( function ( timetogenerate, numletiables, numletCorr ) {
-
+module.exports = asyncify( function ( timetogenerate, numletiables, numletCorr,
+  mongoose ) {
+  riemann = new Riemann( mongoose );
+  create = riemann.create;
   let m = numletiables;
   let n = timetogenerate;
   let k = numletCorr;
