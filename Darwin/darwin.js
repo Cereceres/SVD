@@ -42,7 +42,11 @@ let pca_sample = function ( timeupgrade, sizesample, options, config ) {
         // with the sample and stats make the pca analysis
         if ( stats ) {
           debug.Darwin.info( 'the stats found is:', stats )
-          pca = gsl_pca( Sample, limit, [ stats.media, stats.sigma ] );
+          try {
+            pca = gsl_pca( Sample, limit, [ stats.media, stats.sigma ] );
+          } catch ( e ) {
+            debug.Darwin.error( 'gsl_pca:', e )
+          }
           pcamodel.findOneAndUpdate( {}, {
             V_T_matrix: pca.V_trans,
             S_vector: pca.S_corr

@@ -1,7 +1,6 @@
 'use strict';
-let config = require( './config' )
-  //testing the methos exported from Newton
-var Newton = require( './newton' )( config );
+//testing the methos exported from Newton
+var Newton = require( './newton' )( );
 
 var newton = new Newton.anormalDatum( 0.20 );
 var fraud = newton.isnormal,
@@ -29,10 +28,17 @@ function datafake( ) {
     Math.random( ) * rand( _media, _sigma ), Math.random( ) * rand( _media,
       _sigma )
   ];
-  fraud( Datum, cb, true );
+  console.log( 'Datum=', Datum );
+  try {
+    fraud( Datum, cb, true );
+  } catch ( e ) {
+    console.log( 'error en fraud=', e );
+  }
+
 }
 
 cb = function ( its ) {
+  console.log( 'its=', its );
   if ( !its ) {
     i++;
   } else {
@@ -64,7 +70,7 @@ Newton.initAll( {
   N: [ ]
 }, function ( ) {
   console.log( 'Generaing the data with bayes' );
-  fakecalls( 5000, 4, 2 );
+  fakecalls( 10, 4, 2 );
   console.log( 'Doing calls of random data' );
   f( );
 } );

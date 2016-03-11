@@ -1,5 +1,5 @@
 'use strict';
-let Riemann = require( './Riemann/riemann' );
+let Riemann = require( './Riemann/riemann' )
 let Curie = require( './Curie/curie' ),
   P;
 let curie = new Curie( );
@@ -7,8 +7,9 @@ let debug = require( './debug' )
 let AL = new require( 'nsolvejs' ).AL;
 /**Here the newton methods are exposed*/
 module.exports = function ( config ) {
-  let riemann = new Riemann( config );
-  //Newton exports the save and p_x method
+  let riemann = new Riemann( config ),
+    modelof_pca_system = riemann.modelof_pca_system( )
+    //Newton exports the save and p_x method
   let _this = {}
   _this.bayes = require( './Bayes/bayes' );
 
@@ -133,7 +134,8 @@ module.exports = function ( config ) {
           return cb( stats )
         }
       },
-      function _rej( ) {
+      function _rej( e ) {
+        debug.error( 'error on promise of initall:', e )
         riemann.Modelstats.create( {
             sigma: sigma,
             media: media,
@@ -145,23 +147,23 @@ module.exports = function ( config ) {
             } else {
               debug.info( 'stats created into initall:', stats_created );
             }
-            Riemann.modelof_pca_system( )
-              .findOne( {}, function ( arr, pca ) {
-                if ( arr ) {
-                  debug.error( 'error on find pca:', arr );
+            console.log( 'antes de crear pca ' );
+            modelof_pca_system.findOne( {}, function ( arr, pca ) {
+              console.log( 'arr, pca', arr, pca );
+              if ( arr ) {
+                debug.error( 'error on find pca:', arr );
+              }
+              if ( !pca ) {
+                modelof_pca_system.create( {
+                  V_T_matrix: V_T.array,
+                  S_vector: S.array[ 0 ]
+                }, cb );
+              } else {
+                if ( typeof cb === 'function' ) {
+                  cb( );
                 }
-                if ( !pca ) {
-                  Riemann.modelof_pca_system( )
-                    .create( {
-                      V_T_matrix: V_T.array,
-                      S_vector: S.array[ 0 ]
-                    }, cb );
-                } else {
-                  if ( typeof cb === 'function' ) {
-                    cb( );
-                  }
-                }
-              } );
+              }
+            } );
           } );
       } )
     return _this;

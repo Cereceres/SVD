@@ -11,17 +11,22 @@ let p_x = newton.p_x;
 let uprade_pca = require( '../Darwin/darwin' ).pca_sample;
 
 
-let Pca_analysis = function ( V_matrix, S_vector, _stats ) {
-  this.V = V_matrix;
-  this.S = S_vector;
-  this.stats = _stats;
-  this.p_x = ( function ( analytic ) {
-    return p_x( this.V, analytic, this.S, this.stats );
-  } ).bind( this );
-
-};
 
 let Pca_analytic = function ( timeupgrade, sizesample, options, config ) {
+  let Pca_analysis = function ( V_matrix, S_vector, _stats ) {
+    this.V = V_matrix;
+    this.S = S_vector;
+    this.stats = _stats;
+    this.p_x = ( function ( analytic ) {
+      try {
+        return p_x( this.V, analytic, this.S, this.stats );
+      } catch ( e ) {
+        debug.Curie.error( 'error on p_x:', e )
+      }
+
+    } ).bind( this );
+
+  };
   Riemann = require( '../Riemann/riemann' );
   riemann = new Riemann( config );
   pcamodel = riemann.modelof_pca_system( );

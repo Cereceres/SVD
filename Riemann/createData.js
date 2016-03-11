@@ -4,12 +4,13 @@ let debug = require( '../debug' ),
   l, doc;
 let upgradestats = require( './upgradestats' )
 module.exports = function ( tosave, cb ) {
+  let _this = this
   return new Promise( function ( fulfill, reject ) {
-    doc = new this.Modeldata( {
+    doc = new _this.Modeldata( {
       data: tosave
     } );
     l = doc.data.length;
-    this.Modelstats.findOne( {}, function ( error, stats ) {
+    _this.Modelstats.findOne( {}, function ( error, stats ) {
       if ( !stats || error ) {
         reject( error );
       } else {
@@ -62,7 +63,7 @@ module.exports = function ( tosave, cb ) {
             'the error to save data with error in found stats:',
             err )
         }
-        this.Modelstats.create( {
+        _this.Modelstats.create( {
           sigma: [ ],
           media: [ ],
           N: [ ]
