@@ -7,9 +7,9 @@ let debug = require( '../debug' )
 let options = {
   limit: 0
 };
-let sample = function ( Nsample, cb, mongoose ) {
+let sample = function ( Nsample, cb, config ) {
   let Riemann = require( '../Riemann/riemann' );
-  let riemann = new Riemann( mongoose );
+  let riemann = new Riemann( config );
   let data_model = riemann.Modeldata;
   options.limit = Nsample;
   // console.log('the sample size is',Nsample);

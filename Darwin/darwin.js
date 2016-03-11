@@ -10,9 +10,9 @@ let samplig = require( '../Maxwell/maxwell' ).sample;
 let pca;
 // make the stats into de data to generate
 // the pca_system into the DB
-let pca_sample = function ( timeupgrade, sizesample, options, mongoose ) {
+let pca_sample = function ( timeupgrade, sizesample, options, config ) {
   Riemann = require( '../Riemann/riemann' );
-  riemann = new Riemann( mongoose );
+  riemann = new Riemann( config );
   pcamodel = riemann.modelof_pca_system( );
   statsmodel = riemann.Modelstats;
   options = options || {

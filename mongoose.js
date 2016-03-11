@@ -1,12 +1,13 @@
 'use strict';
 
-var config = require( './config' ),
-  mongoose = require( 'mongoose' ),
-  P = require( 'bluebird' );
+var _config = require( './config' ),
+  mongoose = require( 'mongoose' )
+module.exports = function ( config ) {
+  // Connect to mongo by url
 
-// Promisify mongoose with Bluebird
-P.promisifyAll( mongoose );
-// Connect to mongo by url
-mongoose.connect( config.mongo.url );
-
-module.exports = mongoose;
+  config = config || _config
+  if ( !mongoose.connection.readyState ) {
+    mongoose.connect( config.mongo.url );
+  }
+  return mongoose
+}

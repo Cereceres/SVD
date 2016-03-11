@@ -1,18 +1,17 @@
 'use strict';
-
-//Newton exports the save and p_x method
-let _this = {}
-
-
-module.exports = function ( mongoose ) {
-  let Riemann = require( './Riemann/riemann' );
+let Riemann = require( './Riemann/riemann' );
+let Curie = require( './Curie/curie' ),
+  P;
+let curie = new Curie( );
+let debug = require( './debug' )
+let AL = new require( 'nsolvejs' ).AL;
+/**Here the newton methods are exposed*/
+module.exports = function ( config ) {
+  let riemann = new Riemann( config );
+  //Newton exports the save and p_x method
+  let _this = {}
   _this.bayes = require( './Bayes/bayes' );
-  let riemann = new Riemann( mongoose );
-  let Curie = require( './Curie/curie' ),
-    P;
-  let curie = new Curie( );
-  let debug = require( './debug' )
-  let AL = new require( 'nsolvejs' ).AL;
+
   /* Here exponds the method that calculate the probability of datum
    *  the callback receive the probability as argument and sabe is a
    *  boolean that say if datum is saved
@@ -77,6 +76,10 @@ module.exports = function ( mongoose ) {
     let __this = this;
     /*the function anormal its available into the instance*/
     this.isnormal = function ( Datum, cb, itsaved ) {
+      if ( typeof cb === 'boolean' ) {
+        itsaved = cb
+        cb = undefined
+      }
       if ( itsaved === undefined ) {
         itsaved = true;
       }

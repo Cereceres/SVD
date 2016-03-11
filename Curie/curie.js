@@ -21,9 +21,9 @@ let Pca_analysis = function ( V_matrix, S_vector, _stats ) {
 
 };
 
-let Pca_analytic = function ( timeupgrade, sizesample, options, mongoose ) {
+let Pca_analytic = function ( timeupgrade, sizesample, options, config ) {
   Riemann = require( '../Riemann/riemann' );
-  riemann = new Riemann( mongoose );
+  riemann = new Riemann( config );
   pcamodel = riemann.modelof_pca_system( );
   statsmodel = riemann.Modelstats;
   this.pca_lets = {
@@ -41,6 +41,9 @@ let Pca_analytic = function ( timeupgrade, sizesample, options, mongoose ) {
   if ( options ) {
     this.options = options;
   }
+  if ( config ) {
+    this.config = config;
+  }
   let _this = this;
   // the upgrade method
   this.upgrade = function ( timeupgrade, sizesample, options ) {
@@ -54,7 +57,7 @@ let Pca_analytic = function ( timeupgrade, sizesample, options, mongoose ) {
       _this.options = options;
     }
 
-    uprade_pca( _this.timeupgrade, _this.sizesample, _this.options );
+    uprade_pca( _this.timeupgrade, _this.sizesample, _this.options, _this.config );
   };
 
   this.stop = function ( ) {
@@ -83,7 +86,6 @@ let Pca_analytic = function ( timeupgrade, sizesample, options, mongoose ) {
     } );
   };
 };
-
 
 
 

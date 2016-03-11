@@ -73,8 +73,8 @@ function asyncify( syncFn ) {
 }
 
 module.exports = asyncify( function ( timetogenerate, numletiables, numletCorr,
-  mongoose ) {
-  riemann = new Riemann( mongoose );
+  config ) {
+  riemann = new Riemann( config );
   create = riemann.create;
   let m = numletiables;
   let n = timetogenerate;
