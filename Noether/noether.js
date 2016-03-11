@@ -1,11 +1,10 @@
 'use strict';
-var Noether = Math;
 var sqrt3 = Math.sqrt( 3 ),
   _sqrt3 = 2 * sqrt3,
   pi_2 = Math.PI / 2;
 var start, docs = [ ];
 let debug = require( '../debug' )
-  //Noether take a sample from DB of observations
+  //Math take a sample from DB of observations
 module.exports.plugin = exports = function ( schema ) {
   schema.statics.findRandom = function ( conditions, fields, options,
     callback ) {
@@ -47,7 +46,7 @@ module.exports.plugin = exports = function ( schema ) {
         var i = 0;
         var look = function ( ) {
           if ( i < limit ) {
-            start = Math.floor( Noether.random( ) * num );
+            start = Math.floor( Math.random( ) * num );
             args.options.skip = start;
             var find = _this.findOne( args.conditions, args.fields,
               args
@@ -102,7 +101,7 @@ module.exports.plugin = exports = function ( schema ) {
         return args.callback( err, undefined );
       }
 
-      var start = Math.floor( num * Noether.random( ) );
+      var start = Math.floor( num * Math.random( ) );
       args.options.skip = start;
       var find = _this.findOne( args.conditions, args.fields, args.options );
       if ( populate ) {
@@ -150,7 +149,7 @@ module.exports.plugin = exports = function ( schema ) {
 // random function between a and b
 module.exports.random = function ( a, b ) {
   if ( a === undefined || b === undefined ) {
-    return Noether.random( );
+    return Math.random( );
   }
 
   if ( b === a ) {
@@ -163,12 +162,12 @@ module.exports.random = function ( a, b ) {
     a = c;
   }
 
-  return ( b - a ) * Noether.random( ) + a;
+  return ( b - a ) * Math.random( ) + a;
 };
 // the random number generater with mu and sigma
 module.exports.r_uniform = function ( mu, sigma ) {
-  return mu - sqrt3 * sigma + _sqrt3 * Noether.random( ) *
-    sigma * Math.sin( pi_2 * Noether.random( ) );
+  return mu - sqrt3 * sigma + _sqrt3 * Math.random( ) *
+    sigma * Math.sin( pi_2 * Math.random( ) );
 };
 // the random generater normal with mu and sigma Box–Muller transform
 module.exports.normal = function ( mu, sigma ) {

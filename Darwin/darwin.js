@@ -28,6 +28,7 @@ let pca_sample = function ( timeupgrade, sizesample, options, config ) {
       if ( !Sample.length ) {
         return;
       }
+      //change here to use the algorithm to m<n
       if ( Sample.length ) {
         if ( Sample.length <= Sample[ 0 ].length ) {
           return;

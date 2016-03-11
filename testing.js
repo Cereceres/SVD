@@ -13,8 +13,6 @@ var rand = Noether.normal,
   datafake, cb, Datum;
 var bayes = require( './Bayes/bayes' );
 
-
-
 setInterval( function ( ) {
   _media = Math.pow( 10, 4 * Math.random( ) ) * Math.random( );
   _sigma = _media / Math.pow( 10, 2 * Math.random( ) ) * Math.random( );
@@ -70,7 +68,7 @@ Newton.initAll( {
   N: [ ]
 }, function ( ) {
   console.log( 'Generaing the data with bayes' );
-  fakecalls( 10, 4, 2 );
+  fakecalls( 1000, 10, 6 );
   console.log( 'Doing calls of random data' );
   f( );
 } );

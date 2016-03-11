@@ -17,15 +17,21 @@ let A = [ ],
   save, cb;
 
 datafake = function ( m ) {
+  console.log( 'datafacke =', j < m );
   if ( j < m ) {
     media = _media * random( );
     sigma = _sigma * random( );
+    console.log( 'media, sigma', media, sigma );
     A[ j ] = rand( media, sigma );
     j++;
     datafake( m );
   } else {
+    console.log( 'A__=', A );
+    console.log( 'AL.matrix', AL.matrix );
     Vy = new AL.matrix( A );
+    console.log( 'Vy', Vy );
     Vx = _A.x( Vy.trans( ) );
+    console.log( 'Vx', Vx.array );
     create( {
       data: Vx.trans( ).array[ 0 ]
     }, cb );
@@ -35,15 +41,17 @@ datafake = function ( m ) {
 };
 
 save = function ( m, n, B ) {
+  console.log( 'm, n', m, n );
   _A = B;
   _m = m;
   _n = n;
   A = [ ];
   _media = 800 * random( ) + 200;
   _sigma = _media / 20 * random( );
-  if ( i <= _n ) {
+  console.log( '_media', _media );
+  if ( j <= _n ) {
     datafake( _m );
-    i++;
+    j++;
   }
 };
 
@@ -55,32 +63,20 @@ cb = function ( err ) {
   }
 };
 
-function asyncify( syncFn ) {
-  let callback;
-  return function ( ) {
-    let args = Array.prototype.slice.call( arguments );
-    callback = args.pop( );
-    let result;
-    setImmediate( function ( ) {
-      try {
-        result = syncFn.apply( this, args );
-      } catch ( error ) {
-        return callback( error );
-      }
-      callback( null, result );
-    } );
-  };
-}
-
-module.exports = asyncify( function ( timetogenerate, numletiables, numletCorr,
-  config ) {
-  riemann = new Riemann( config );
+module.exports = function ( numdata, numletiables, numletCorr ) {
+  riemann = new Riemann( );
   create = riemann.create;
   let m = numletiables;
-  let n = timetogenerate;
+  let n = numdata;
   let k = numletCorr;
   let B = new AL.matrix.create( m, k, function ( ) {
     return -1 + 2 * Math.random( );
   } );
-  save( k, n, B );
-} );
+  console.log( 'B.array', B.array );
+  try {
+    save( k, n, B );
+  } catch ( e ) {
+    console.log( 'error on save', e );
+  }
+
+}

@@ -5,18 +5,16 @@
   "main": "newton.js",
   "dependencies": {
     "bindings": "^1.2.1",
-    "bluebird": "^2.10.2",
     "debug": "^2.2.0",
-    "lodash": "^3.10.1",
+    "lodash": "^4.6.1",
     "mongoose": "^4.1.11",
     "mongoose-simple-random": "^0.3.3",
     "nan": "^2.1.0",
     "node-gyp": "^3.0.3",
-    "nsolvejs": "0.0.7",
+    "nsolvejs": "^0.1.13",
     "randgen": "^0.1.0",
     "rc": "^1.1.2",
-    "rng": "^0.2.2",
-    "simple-asyncify": "^1.0.0"
+    "rng": "^0.2.2"
   },
   "devDependencies": {},
   "scripts": {
