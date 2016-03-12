@@ -1,7 +1,6 @@
 'use strict';
 //testing the methos exported from Newton
 var Newton = require( './newton' )( );
-
 var newton = new Newton.anormalDatum( 0.20 );
 var fraud = newton.isnormal,
   i = 0,
@@ -21,16 +20,15 @@ setInterval( function ( ) {
 
 
 function datafake( ) {
-
-  Datum = [ rand( _media, _sigma ), Math.random( ) * rand( _media, _sigma ),
-    Math.random( ) * rand( _media, _sigma ), Math.random( ) * rand( _media,
-      _sigma )
-  ];
+  Datum = [ ]
+  for ( var i = 0; i < 10; i++ ) {
+    Datum.push( Math.random( ) * rand( _media, _sigma ) )
+  }
   console.log( 'Datum=', Datum );
   try {
     fraud( Datum, cb, true );
   } catch ( e ) {
-    console.log( 'error en fraud=', e );
+    console.log( 'error en fraud=', e.stack );
   }
 
 }
@@ -56,19 +54,13 @@ function f( ) {
   datafake( );
 }
 
-function fakecalls( ndata, nvar, ncorr ) {
-  bayes( ndata, nvar, ncorr, function ( ) {
-    fakecalls( ndata, nvar, ncorr );
-  } );
-
-}
 Newton.initAll( {
-  sigma: [ 20, 38, 66, 122 ],
-  media: [ 700, 156, 665.7, 1400 ],
+  sigma: [ 20, 38, 66, 122, 34, 456, 345, 32, 32, 4 ],
+  media: [ 700, 156, 665.7, 1400, 21, 3, 4, 5, 677, 12 ],
   N: [ ]
 }, function ( ) {
   console.log( 'Generaing the data with bayes' );
-  fakecalls( 1000, 10, 6 );
+  bayes( 20, 10, 2 );
   console.log( 'Doing calls of random data' );
   f( );
 } );

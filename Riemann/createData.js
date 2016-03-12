@@ -29,6 +29,7 @@ module.exports = function ( tosave, cb ) {
         doc: doc,
         count: 0
       };
+      debug.Riemann.error( 'stats to upgrad', _stats );
       upgradestats( _stats );
       stats.sigma = _stats.sigma;
       stats.media = _stats.media;
@@ -49,7 +50,7 @@ module.exports = function ( tosave, cb ) {
             debug.Riemann.info( 'data saved is:', _doc )
           }
           if ( typeof cb === 'function' ) {
-            cb( _doc )
+            cb( err, _doc )
           }
 
         } );
@@ -74,11 +75,10 @@ module.exports = function ( tosave, cb ) {
           } else {
             debug.Riemann.info( 'the empty stats are:', stats )
           }
-        } ).then( function ( ) {
           if ( typeof cb === 'function' ) {
-            cb( )
+            cb( _error, stats )
           }
-        } );
+        } )
       } );
     } );
 };

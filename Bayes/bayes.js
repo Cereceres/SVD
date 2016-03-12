@@ -1,82 +1,73 @@
 'use strict';
 
 //Bayes generate the aleatory data
-let Riemann = new require( '../Riemann/riemann' );
+let Riemann = require( '../Riemann/riemann' );
+let riemann = new Riemann( )
 let AL = require( 'nsolvejs' ).AL;
 let debug = require( '../debug' )
-let riemann
-let create
 let Noether = require( '../Noether/noether' );
 let random = Noether.random;
 let rand = Noether.normal;
 let A = [ ],
   sigma, media, j = 0,
+  i = 0,
   _m, _n, Vx, Vy, _A, _sigma = 20,
   _media = 100,
-  i, datafake,
-  save, cb;
+  datafake,
+  save, cb
 
 datafake = function ( m ) {
-  console.log( 'datafacke =', j < m );
   if ( j < m ) {
     media = _media * random( );
     sigma = _sigma * random( );
-    console.log( 'media, sigma', media, sigma );
-    A[ j ] = rand( media, sigma );
+    A.push( rand( media, sigma ) );
     j++;
     datafake( m );
   } else {
-    console.log( 'A__=', A );
-    console.log( 'AL.matrix', AL.matrix );
     Vy = new AL.matrix( A );
-    console.log( 'Vy', Vy );
-    Vx = _A.x( Vy.trans( ) );
-    console.log( 'Vx', Vx.array );
-    create( {
-      data: Vx.trans( ).array[ 0 ]
-    }, cb );
-    j = 0;
-    A = [ ];
+    Vx = _A.x( Vy );
+    console.log( 'Vx.trans( ).array[ 0 ]', Vx.trans( ).array[ 0 ] );
+    riemann.createData( Vx.trans( ).array[ 0 ], cb );
   }
 };
 
 save = function ( m, n, B ) {
-  console.log( 'm, n', m, n );
   _A = B;
-  _m = m;
-  _n = n;
+  _m = m; // Number of variables
+  _n = n; // Number of datas
   A = [ ];
   _media = 800 * random( ) + 200;
   _sigma = _media / 20 * random( );
-  console.log( '_media', _media );
-  if ( j <= _n ) {
+  if ( i <= _n ) {
     datafake( _m );
-    j++;
+    i++;
   }
 };
 
-cb = function ( err ) {
+cb = function ( err, doc ) {
   if ( err ) {
     debug.Bayes.error( 'err on Bayes=', err );
   } else {
+    debug.Bayes.info( 'data saved', doc )
+    j = 0;
+    A = [ ];
     save( _m, _n, _A );
   }
+
 };
 
 module.exports = function ( numdata, numletiables, numletCorr ) {
-  riemann = new Riemann( );
-  create = riemann.create;
-  let m = numletiables;
+  let m = numletCorr;
   let n = numdata;
-  let k = numletCorr;
-  let B = new AL.matrix.create( m, k, function ( ) {
+  let k = numletiables;
+  console.log( 'k,m', k, m );
+  let B = new AL.matrix.create( k, m, function ( ) {
     return -1 + 2 * Math.random( );
   } );
-  console.log( 'B.array', B.array );
   try {
-    save( k, n, B );
+    save( m, n, B );
   } catch ( e ) {
-    console.log( 'error on save', e );
+    debug.Bayes.error( 'error on save', e );
   }
 
 }

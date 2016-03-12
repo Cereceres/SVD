@@ -20,7 +20,7 @@ module.exports = function ( config ) {
 
   _this = function ( Datum, cb, save ) {
     if ( save ) {
-      riemann.create( Datum, function ( ) {
+      riemann.createData( Datum, function ( ) {
         curie.pca( function ( p_x ) {
           P = p_x( Datum );
           if ( cb ) {
@@ -56,7 +56,7 @@ module.exports = function ( config ) {
   /* Save the datum into de DB
    */
   _this.save = function ( Datum ) {
-    riemann.create( Datum );
+    riemann.createData( Datum );
     return _this;
   };
   /*@Constructor that build a anormal watcher datum.
@@ -135,7 +135,7 @@ module.exports = function ( config ) {
         }
       },
       function _rej( e ) {
-        debug.error( 'error on promise of initall:', e )
+        debug.error( 'error on promise of initall or stats not found:', e )
         riemann.Modelstats.create( {
             sigma: sigma,
             media: media,

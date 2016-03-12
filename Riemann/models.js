@@ -6,14 +6,20 @@ let Schema = mongoose.Schema;
 let schema = new Schema( {
   V_T_matrix: Array,
   S_vector: Array,
+}, {
+  versionKey: false
 } );
 let schemadata = new Schema( {
   data: Array,
+}, {
+  versionKey: false
 } );
 let schemastats = new Schema( {
   sigma: Array,
   media: Array,
   N: Array,
+}, {
+  versionKey: false
 } );
 
 schemadata.plugin( random );

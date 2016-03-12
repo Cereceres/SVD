@@ -29,16 +29,15 @@ let pca_sample = function ( timeupgrade, sizesample, options, config ) {
         return;
       }
       //change here to use the algorithm to m<n
-      if ( Sample.length ) {
-        if ( Sample.length <= Sample[ 0 ].length ) {
-          return;
-        }
+      if ( Sample.length <= Sample[ 0 ].length ) {
+        debug.Darwin.info( 'sample is not enougth to do PCA', Sample.length )
+        return;
       }
-
       // find the stats into de DB
       statsmodel.findOne( {}, function function_name( err, stats ) {
-        if ( err || stats ) {
+        if ( err || !stats ) {
           debug.Darwin.error( 'Error on findOne stats', err );
+          return
         }
         // with the sample and stats make the pca analysis
         if ( stats ) {
@@ -46,7 +45,7 @@ let pca_sample = function ( timeupgrade, sizesample, options, config ) {
           try {
             pca = gsl_pca( Sample, limit, [ stats.media, stats.sigma ] );
           } catch ( e ) {
-            debug.Darwin.error( 'gsl_pca:', e )
+            debug.Darwin.error( 'gsl_pca:', e.stack )
           }
           pcamodel.findOneAndUpdate( {}, {
             V_T_matrix: pca.V_trans,

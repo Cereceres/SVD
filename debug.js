@@ -2,7 +2,7 @@
 let debug = require( 'debug' )
 
 /** Services to debug */
-let services = [ 'Curie', 'Darwin', 'Maxwell', 'Noether', 'Riemann' ]
+let services = [ 'Curie', 'Darwin', 'Maxwell', 'Noether', 'Riemann', 'Bayes' ]
 
 /** Set default debuggers */
 let debuggers = debug( 'Newton' )

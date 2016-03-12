@@ -1,8 +1,10 @@
 'use strict'
-module.exports = function ( stats ) {
+module.exports = function upgradestats( stats ) {
   if ( stats.count < stats.doc.data.length ) {
     let i = stats.count;
-    if ( !stats.N[ i ] ) {
+    if ( stats.N[ i ] === undefined || stats.N[ i ] === null || typeof stats.N[
+        i ] ===
+      'undefined' ) {
       stats.N[ i ] = 0;
     }
     if ( !stats.sigma[ i ] ) {
