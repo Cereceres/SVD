@@ -11,6 +11,8 @@ let pca;
 // make the stats into de data to generate
 // the pca_system into the DB
 let pca_sample = function ( timeupgrade, sizesample, options, config ) {
+  options.conditions = options.conditions || {}
+  options.fields = options.fields || {}
   Riemann = require( '../Riemann/riemann' );
   riemann = new Riemann( config );
   pcamodel = riemann.modelof_pca_system( );
@@ -23,48 +25,49 @@ let pca_sample = function ( timeupgrade, sizesample, options, config ) {
   // save the setIntervalID to stop it.
   let tostop = setInterval( function ( ) {
     // the sample is taken
-    samplig( sizesample, function ( Sample ) {
-      debug.Darwin.info( 'sample found is:', Sample.length )
-      if ( !Sample.length ) {
-        return;
-      }
-      //change here to use the algorithm to m<n
-      if ( Sample.length <= Sample[ 0 ].length ) {
-        debug.Darwin.info( 'sample is not enougth to do PCA', Sample.length )
-        return;
-      }
-      // find the stats into de DB
-      statsmodel.findOne( {}, function function_name( err, stats ) {
-        if ( err || !stats ) {
-          debug.Darwin.error( 'Error on findOne stats', err );
-          return
+    samplig( sizesample, options.conditions, options.fields, options,
+      function ( Sample ) {
+        debug.Darwin.info( 'sample found is:', Sample.length )
+        if ( !Sample.length ) {
+          return;
         }
-        // with the sample and stats make the pca analysis
-        if ( stats ) {
-          debug.Darwin.info( 'the stats found is:', stats )
-          try {
-            pca = gsl_pca( Sample, limit, [ stats.media, stats.sigma ] );
-          } catch ( e ) {
-            debug.Darwin.error( 'gsl_pca:', e.stack )
+        //change here to use the algorithm to m<n
+        if ( Sample.length <= Sample[ 0 ].length ) {
+          debug.Darwin.info( 'sample is not enougth to do PCA', Sample.length )
+          return;
+        }
+        // find the stats into de DB
+        statsmodel.findOne( {}, function function_name( err, stats ) {
+          if ( err || !stats ) {
+            debug.Darwin.error( 'Error on findOne stats', err );
+            return
           }
-          pcamodel.findOneAndUpdate( {}, {
-            V_T_matrix: pca.V_trans,
-            S_vector: pca.S_corr
-          }, {
-            new: true,
-            upsert: true
-          }, function ( error ) {
-            // if the pca doc does not exist, is created
-            if ( error ) {
-              debug.Darwin.error( 'error on update pca :',
-                error );
+          // with the sample and stats make the pca analysis
+          if ( stats ) {
+            debug.Darwin.info( 'the stats found is:', stats )
+            try {
+              pca = gsl_pca( Sample, limit, [ stats.media, stats.sigma ] );
+            } catch ( e ) {
+              debug.Darwin.error( 'gsl_pca:', e.stack )
             }
+            pcamodel.findOneAndUpdate( {}, {
+              V_T_matrix: pca.V_trans,
+              S_vector: pca.S_corr
+            }, {
+              new: true,
+              upsert: true
+            }, function ( error ) {
+              // if the pca doc does not exist, is created
+              if ( error ) {
+                debug.Darwin.error( 'error on update pca :',
+                  error );
+              }
 
 
-          } );
-        }
+            } );
+          }
+        } );
       } );
-    } );
   }, timeupgrade );
 
   pca_sample.tostop = tostop;

@@ -4,16 +4,13 @@
 
 let A = [ ];
 let debug = require( '../debug' )
-let options = {
-  limit: 0
-};
-let sample = function ( Nsample, cb ) {
+let sample = function ( Nsample, conditions, fields, options, cb ) {
   let Riemann = require( '../Riemann/riemann' );
   let riemann = new Riemann( );
   let data_model = riemann.Modeldata;
-  options.limit = Nsample;
+  options.limit = options.limit || Nsample;
   // console.log('the sample size is',Nsample);
-  data_model.findRandom( {}, {}, options,
+  data_model.findRandom( conditions, fields, options,
     function ( error, res ) {
       if ( error ) {
         debug.Maxwell.error( 'error  ', error );
