@@ -25,17 +25,24 @@ let schemastats = new Schema( {
   versionKey: false
 } );
 
+let ownersSchema = new Schema( {
+  reference: String
+}, {
+  versionKey: false
+} );
+ownersSchema.plugin( random );
 schemadata.plugin( random );
 schemastats.plugin( random );
 schema.plugin( random );
 let data = mongoose.model( 'data', schemadata );
 let stats = mongoose.model( 'stats', schemastats );
 let model = mongoose.model( 'pca_system', schema );
+let owners = mongoose.model( 'pca_system', ownersSchema );
 
 module.exports = function ( ) {
   this.Modeldata = data
   this.Modelstats = stats
-  this.modelof_pca_system = function ( ) {
-    return model
-  };
+  this.Modelowners = owners
+  this.modelof_pca_system = model
+
 }

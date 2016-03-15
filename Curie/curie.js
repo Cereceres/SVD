@@ -29,7 +29,7 @@ let Pca_analytic = function ( timeupgrade, sizesample, options, config ) {
   };
   Riemann = require( '../Riemann/riemann' );
   riemann = new Riemann( config );
-  pcamodel = riemann.modelof_pca_system( );
+  pcamodel = riemann.modelof_pca_system;
   statsmodel = riemann.Modelstats;
   this.pca_lets = {
     V_T: [ ],
@@ -70,14 +70,15 @@ let Pca_analytic = function ( timeupgrade, sizesample, options, config ) {
   };
   // the callback receive the p_x function as argument.
   this.pca = function ( cb ) {
-    statsmodel.findOne( {}, function ( err, stats ) {
+    statsmodel.findOne( _this.options.conditions, function ( err, stats ) {
       if ( err || !stats ) {
         debug.Curie.error( 'error to find stats:', err )
       }
       if ( stats ) {
         debug.Curie.info( 'the stats found was:', stats )
         _this.pca_lets.stats = [ stats.media, stats.sigma ];
-        pcamodel.findOne( {}, function ( error, pca ) {
+        pcamodel.findOne( _this.options.conditions, function ( error,
+          pca ) {
           if ( pca ) {
             _this.pca_lets.V_T = pca.V_T_matrix;
             _this.pca_lets.S = pca.S_vector;

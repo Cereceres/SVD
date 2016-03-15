@@ -7,13 +7,10 @@ module.exports = function ( tosave, cb ) {
   let _this = this
   return new Promise( function ( fulfill, reject ) {
     doc = new _this.Modeldata( {
-      data: tosave.data,
-      owner: tosave.owner || 0
+      data: tosave
     } );
     l = doc.data.length;
-    _this.Modelstats.findOne( {
-      owner: tosave.owner
-    }, function ( error, stats ) {
+    _this.Modelstats.findOne( {}, function ( error, stats ) {
       if ( !stats || error ) {
         reject( error );
       } else {
@@ -45,44 +42,29 @@ module.exports = function ( tosave, cb ) {
         } else {
           debug.Riemann.info( 'stats saved:', st );
         }
-      } ).then( function ( ) {
-        doc.save( function ( err, _doc ) {
-          if ( err ) {
-            debug.Riemann.error( 'error to save data:', err )
-          } else {
-            debug.Riemann.info( 'data saved is:', _doc )
-          }
-          if ( typeof cb === 'function' ) {
-            cb( err, _doc )
-          }
-
-        } );
-      } );
+        if ( typeof cb === 'function' ) {
+          cb( err, st )
+        }
+      } )
     },
     function ( e ) {
       debug.Riemann.error( 'error to found stats or stats not found', e )
-      doc.save( ).then( function ( err ) {
-        if ( err ) {
-          debug.Riemann.error(
-            'the error to save data with error in found stats:',
-            err )
+      _this.Modelstats.create( {
+        sigma: [ ],
+        media: [ ],
+        N: [ ],
+        owner: 0
+      }, function ( _error, stats ) {
+        if ( _error ) {
+          debug.Riemann.error( 'error to create stats empty:',
+            _error );
+        } else {
+          debug.Riemann.info( 'the empty stats are:', stats )
         }
-        _this.Modelstats.create( {
-          sigma: [ ],
-          media: [ ],
-          N: [ ],
-          owner: tosave.owner
-        }, function ( _error, stats ) {
-          if ( _error ) {
-            debug.Riemann.error( 'error to create stats empty:',
-              _error );
-          } else {
-            debug.Riemann.info( 'the empty stats are:', stats )
-          }
-          if ( typeof cb === 'function' ) {
-            cb( _error, stats )
-          }
-        } )
-      } );
+        if ( typeof cb === 'function' ) {
+          cb( _error, stats )
+        }
+      } )
+
     } );
 };

@@ -1,16 +1,20 @@
 'use strict';
 //testing the methos exported from Newton
-var Newton = require( './newton' )( );
-var newton = new Newton.anormalDatum( 0.20 );
-var fraud = newton.isnormal,
+let Newton = require( './newton' )( );
+let newton = new Newton.anormalDatum( 0.20 );
+let fraud = newton.isnormal,
   i = 0,
   j = 0,
   _sigma = 2,
   _media = 10;
-var Noether = require( './Noether/noether' );
-var rand = Noether.normal,
+let Noether = require( './Noether/noether' );
+let rand = Noether.normal,
   datafake, cb, Datum;
-var bayes = require( './Bayes/bayes' );
+let bayes = require( './Bayes/bayes' );
+let owner = [ ]
+for ( let i = 0; i < 1000; i++ ) {
+  owner.push( i + 1 )
+}
 
 setInterval( function ( ) {
   _media = Math.pow( 10, 4 * Math.random( ) ) * Math.random( );
@@ -19,14 +23,17 @@ setInterval( function ( ) {
 
 
 
-function datafake( ) {
+datafake = function ( ) {
   Datum = [ ]
-  for ( var i = 0; i < 10; i++ ) {
+  for ( let i = 0; i < 10; i++ ) {
     Datum.push( Math.random( ) * rand( _media, _sigma ) )
   }
   console.log( 'Datum=', Datum );
   try {
-    fraud( Datum, cb, true );
+    fraud( {
+      data: Datum,
+      owner: Math.floor( owner.length * Math.random( ) )
+    }, cb, true );
   } catch ( e ) {
     console.log( 'error en fraud=', e.stack );
   }
