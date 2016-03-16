@@ -2,8 +2,7 @@
 
 //Curie calculate the probability of data given
 let newton = require( 'bindings' )( 'newton' );
-let Riemann
-let riemann
+let Riemann = require( '../Riemann/riemann' );
 let pcamodel
 let debug = require( '../debug' )
 let statsmodel
@@ -13,6 +12,13 @@ let uprade_pca = require( '../Darwin/darwin' ).pca_sample;
 
 
 let Pca_analytic = function ( timeupgrade, sizesample, options, config ) {
+  if ( typeof sizesample === 'object' ) {
+    options = sizesample
+    sizesample = undefined
+  } else if ( typeof timeupgrade === 'object' ) {
+    options = timeupgrade
+    timeupgrade = undefined
+  }
   let Pca_analysis = function ( V_matrix, S_vector, _stats ) {
     this.V = V_matrix;
     this.S = S_vector;
@@ -27,28 +33,21 @@ let Pca_analytic = function ( timeupgrade, sizesample, options, config ) {
     } ).bind( this );
 
   };
-  Riemann = require( '../Riemann/riemann' );
-  riemann = new Riemann( config );
-  pcamodel = riemann.modelof_pca_system;
-  statsmodel = riemann.Modelstats;
+  pcamodel = Riemann.modelof_pca_system;
+  statsmodel = Riemann.Modelstats;
   this.pca_lets = {
     V_T: [ ],
     S: [ ],
     stats: [ ]
   };
   //if the time arguments is passed the upgrade methos is exec
-  if ( timeupgrade ) {
-    this.timeupgrade = timeupgrade;
+  this.timeupgrade = timeupgrade || 30000;
+  this.sizesample = sizesample || 10000
+  this.options = options || {
+    conditions: {}
   }
-  if ( sizesample ) {
-    this.sizesample = sizesample;
-  }
-  if ( options ) {
-    this.options = options;
-  }
-  if ( config ) {
-    this.config = config;
-  }
+  this.config = config || {}
+
   let _this = this;
   // the upgrade method
   this.upgrade = function ( timeupgrade, sizesample, options ) {

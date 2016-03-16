@@ -37,12 +37,12 @@ schema.plugin( random );
 let data = mongoose.model( 'data', schemadata );
 let stats = mongoose.model( 'stats', schemastats );
 let model = mongoose.model( 'pca_system', schema );
-let owners = mongoose.model( 'pca_system', ownersSchema );
+let owners = mongoose.model( 'ownersSchema', ownersSchema );
 
-module.exports = function ( ) {
-  this.Modeldata = data
-  this.Modelstats = stats
-  this.Modelowners = owners
-  this.modelof_pca_system = model
+module.exports = {
+  Modeldata: data,
+  Modelstats: stats,
+  Modelowners: owners,
+  modelof_pca_system: model
 
 }

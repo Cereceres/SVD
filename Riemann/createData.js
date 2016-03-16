@@ -8,7 +8,7 @@ module.exports = function ( tosave, cb ) {
   return new Promise( function ( fulfill, reject ) {
     doc = new _this.Modeldata( {
       data: tosave.data,
-      owner: tosave.owner || 0
+      owner: tosave.owner
     } );
     l = doc.data.length;
     _this.Modelstats.findOne( {

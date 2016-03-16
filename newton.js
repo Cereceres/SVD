@@ -5,14 +5,13 @@ let AL = new require( 'nsolvejs' ).AL;
 let Curie = require( './Curie/curie' ),
   P;
 let curie = new Curie( );
-/**Here the newton methods are exposed*/
-module.exports = function ( config ) {
-  let riemann = new Riemann( config ),
-    modelof_pca_system = riemann.modelof_pca_system( )
-    //Newton exports the save and p_x method
+let modelof_pca_system = Riemann.modelof_pca_system
+  /**Here the newton methods are exposed*/
+module.exports = function ( ) {
+
+  //Newton exports the save and p_x method
   let _this = {}
   _this.bayes = require( './Bayes/bayes' );
-
   /* Here exponds the method that calculate the probability of datum
    *  the callback receive the probability as argument and sabe is a
    *  boolean that say if datum is saved
@@ -28,7 +27,7 @@ module.exports = function ( config ) {
     let curie = new Curie( options.timeupgrade, options.sizesample, options,
       options.config );
     if ( save ) {
-      riemann.createData( Datum )
+      Riemann.createData( Datum )
     }
     curie.pca( function ( p_x ) {
       P = p_x( Datum );
@@ -59,7 +58,7 @@ module.exports = function ( config ) {
   /* Save the datum into de DB
    */
   _this.save = function ( Datum ) {
-    riemann.createData( Datum );
+    Riemann.createData( Datum );
     return _this;
   };
   /*@Constructor that build a anormal watcher datum.
@@ -115,15 +114,15 @@ module.exports = function ( config ) {
     let media = stats.media;
     let N = stats.N;
     let n = media.length
-    let owner = stats.owner
+    let owner = stats.owner || 0
     let V_T = new AL.matrix.diagonal( n, n );
     let S = new AL.matrix.create( n, 1, function ( i ) {
         return sigma[ i ];
       } )
       .trans( );
     let promise = new Promise( function ( full, rej ) {
-      riemann.Modelstats.findOne( {
-        owner: stats.owner
+      Riemann.Modelstats.findOne( {
+        owner: owner
       }, function ( error, stats ) {
         if ( error ) {
           debug.error( 'error on find stats:', error );
@@ -143,7 +142,7 @@ module.exports = function ( config ) {
       },
       function _rej( e ) {
         debug.error( 'error on promise of initall or stats not found:', e )
-        riemann.Modelstats.create( {
+        Riemann.Modelstats.create( {
             sigma: sigma,
             media: media,
             N: N,
@@ -156,15 +155,18 @@ module.exports = function ( config ) {
               debug.info( 'stats created into initall:', stats_created );
             }
             console.log( 'antes de crear pca ' );
-            modelof_pca_system.findOne( {}, function ( arr, pca ) {
-              console.log( 'arr, pca', arr, pca );
+            modelof_pca_system.findOne( {
+              owner: owner
+            }, function ( arr, pca ) {
               if ( arr ) {
-                debug.error( 'error on find pca:', arr );
+                debug.error( 'error on find pca:', arr, 'owner:',
+                  owner );
               }
               if ( !pca ) {
                 modelof_pca_system.create( {
                   V_T_matrix: V_T.array,
-                  S_vector: S.array[ 0 ]
+                  S_vector: S.array[ 0 ],
+                  owner: owner
                 }, cb );
               } else {
                 if ( typeof cb === 'function' ) {

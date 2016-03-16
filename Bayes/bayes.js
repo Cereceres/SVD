@@ -2,7 +2,6 @@
 
 //Bayes generate the aleatory data
 let Riemann = require( '../Riemann/riemann' );
-let riemann = new Riemann( )
 let AL = require( 'nsolvejs' ).AL;
 let debug = require( '../debug' )
 let Noether = require( '../Noether/noether' );
@@ -27,7 +26,7 @@ datafake = function ( m ) {
     Vy = new AL.matrix( A );
     Vx = _A.x( Vy );
     console.log( 'Vx.trans( ).array[ 0 ]', Vx.trans( ).array[ 0 ] );
-    riemann.createData( Vx.trans( ).array[ 0 ], cb );
+    Riemann.createData( Vx.trans( ).array[ 0 ], cb );
   }
 };
 

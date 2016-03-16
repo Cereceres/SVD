@@ -67,7 +67,7 @@ Newton.initAll( {
   N: [ ]
 }, function ( ) {
   console.log( 'Generaing the data with bayes' );
-  bayes( 20, 10, 2 );
+  bayes( 200, 10, 2 );
   console.log( 'Doing calls of random data' );
   f( );
 } );

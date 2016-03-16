@@ -3,21 +3,19 @@ let newton = require( 'bindings' )( 'newton' );
 let gsl_pca = newton.pca;
 let Riemann
 let pcamodel, usersModel
-let riemann
 let debug = require( '../debug' )
 let statsmodel
 let sampling = require( '../Maxwell/maxwell' ).sample;
 let pca;
 // make the stats into de data to generate
 // the pca_system into the DB
-let pca_sample = function ( timeupgrade, sizesample, options, config ) {
+let pca_sample = function ( timeupgrade, sizesample, options ) {
   options.conditions = options.conditions || {}
   options.fields = options.fields || {}
   Riemann = require( '../Riemann/riemann' );
-  riemann = new Riemann( config );
-  pcamodel = riemann.modelof_pca_system;
-  statsmodel = riemann.Modelstats;
-  usersModel = riemann.Modelowners;
+  pcamodel = Riemann.modelof_pca_system;
+  statsmodel = Riemann.Modelstats;
+  usersModel = Riemann.Modelowners;
   options.limit = options.limit || 0.75
   let limit = options.limit;
   debug.Darwin.info( 'upgrading from darwin' );
@@ -25,6 +23,11 @@ let pca_sample = function ( timeupgrade, sizesample, options, config ) {
   let tostop = setInterval( function ( ) {
     // the sample is taken
     usersModel.find( {}, function ( users ) {
+      if ( !users ) {
+        debug.Darwin.info( 'There is not users to do upgrade' )
+
+        return
+      }
       for ( var i = 0; i < users.length; i++ ) {
         options.conditions.owner = users[ i ]
         sampling( sizesample, options.conditions, options.fields,
