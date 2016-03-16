@@ -2,8 +2,7 @@
 let Riemann = require( './Riemann/riemann' )
 let debug = require( './debug' )
 let AL = new require( 'nsolvejs' ).AL;
-let Curie = require( './Curie/curie' ),
-  P;
+let Curie = require( './Curie/curie' ),P;
 let curie = new Curie( );
 let modelof_pca_system = Riemann.modelof_pca_system
   /**Here the newton methods are exposed*/
