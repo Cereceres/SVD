@@ -12,7 +12,7 @@ using namespace v8;
 // The Dot function that calculate the dot producto between two vectors
 int Dot(const gsl_vector * a, const gsl_vector * b, double& result) {
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
-    v8::TryCatch::TryCatch trycatch(isolate );
+    v8::TryCatch trycatch(isolate );
     double *sum= new double;
     gsl_blas_ddot(a,b,sum);
     result = *sum;
@@ -41,7 +41,7 @@ double  sqrtf(double item, int index){
  }
 // The normal function calculate
  double normal_pdf(const gsl_vector * arg,const gsl_vector * sigma){
-   v8::TryCatch::TryCatch trycatch;
+   v8::TryCatch trycatch;
     double twopisqrt = sqrt(2*M_PI),p_x=1/twopisqrt, mu;
     int i; int length = (int) arg->size;
     for ( i = 0; i < length; i++) {
@@ -59,7 +59,7 @@ double  sqrtf(double item, int index){
 
  // The normal comulative function calculate
   double normal_cdf_Q(const gsl_vector * arg,const gsl_vector * sigma){
-    v8::TryCatch::TryCatch trycatch;
+    v8::TryCatch trycatch;
     double twopisqrt = sqrt(2*M_PI),p_x=1/twopisqrt, mu=0;
     int i; int length = (int) arg->size;
     for ( i = 0; i < length; i++) {
@@ -76,7 +76,7 @@ double  sqrtf(double item, int index){
   }
 //the couting function that eliminate de varianze without importance
  void couting_vec(const gsl_vector* a,  const double &limit , const double &sumt, int * count){
-   v8::TryCatch::TryCatch trycatch;
+   v8::TryCatch trycatch;
     int l = (int) a->size ;
     int *i =  count ; *i=0;
     double _lim =gsl_vector_get(a, *i)/sumt;
@@ -93,7 +93,7 @@ double  sqrtf(double item, int index){
  }
  // the function that read the data from info
   gsl_matrix * read_matrix(const Nan::FunctionCallbackInfo<v8::Value>& info){
-    v8::TryCatch::TryCatch trycatch;
+    v8::TryCatch trycatch;
 
     double x =0; int i,j,l,m,n;
       Handle<Array> array, *_array;
@@ -134,7 +134,7 @@ double  sqrtf(double item, int index){
  }
  // the function that read the data from info
   gsl_vector * read_vector(const Nan::FunctionCallbackInfo<v8::Value>& info){
-    v8::TryCatch::TryCatch trycatch;
+    v8::TryCatch trycatch;
 
     double x =0; int i,n;
       Handle<Array> array;
@@ -164,7 +164,7 @@ double  sqrtf(double item, int index){
 }
 //The function that shift the datas to media value and normalize to sigma
  void normalization(gsl_matrix * M, gsl_vector * Media, gsl_vector * Sigma){
-   v8::TryCatch::TryCatch trycatch;
+   v8::TryCatch trycatch;
 
     int column = (int) M->size2,
     m= (int) M->size1,i; double m_sqrt= (double) m;
@@ -200,7 +200,7 @@ double  sqrtf(double item, int index){
  }
 
  void vnorm( gsl_vector* S, double * sum) {
-   v8::TryCatch::TryCatch trycatch;
+   v8::TryCatch trycatch;
     int n =(int)  S->size;
     gsl_vector * ident = gsl_vector_calloc((size_t)n);
     gsl_vector_set_all(ident,1);
@@ -213,7 +213,7 @@ double  sqrtf(double item, int index){
  }
 
  void dim_red( gsl_matrix *V ,gsl_matrix* _V_ ,gsl_vector* S, gsl_vector* _S_,int *count) {
-   v8::TryCatch::TryCatch trycatch;
+   v8::TryCatch trycatch;
 
     //With the limit given the dimension is reduced
     gsl_vector_view   _S =
@@ -230,7 +230,7 @@ double  sqrtf(double item, int index){
 
  }
       void probability(const Nan::FunctionCallbackInfo<v8::Value>& info){
-        v8::TryCatch::TryCatch trycatch;
+        v8::TryCatch trycatch;
           int i,n,count;
           // the array is read from info and stored into matrix M
            gsl_matrix *_V_ = read_matrix(info);
@@ -296,7 +296,7 @@ double  sqrtf(double item, int index){
           }
       }
       void print_M(gsl_matrix * M){
-        v8::TryCatch::TryCatch trycatch;
+        v8::TryCatch trycatch;
 
           printf("<<<<<<<<<=============The matrix is ===============>>>>>>\n" );
           int m = (int ) M->size1,n = (int ) M->size2 ;
@@ -319,7 +319,7 @@ double  sqrtf(double item, int index){
 
 // the pca analysis, the arguments are (@MatrixData, @LimitToReduce, @StatsArray)
 void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
-      v8::TryCatch::TryCatch trycatch;
+      v8::TryCatch trycatch;
 
       int i,j,n, m; gsl_matrix_view A;
       // the array is read from info and stored into matrix M
@@ -391,7 +391,7 @@ void gsl_pca (const Nan::FunctionCallbackInfo<v8::Value>& info) {
         A = gsl_matrix_view_array(_S_->data, _S_->size,1);
        print_M(  &A.matrix);
       // The object to return are build
-      v8::Local<v8::Object> obj = Nan::New<v8::Object>();
+      v8::Local<v8::Object> obj ;
       Handle<Array> R_array = Nan::New<v8::Array>((size_t) *count);
       Handle<Array> V_array = Nan::New<v8::Array>((size_t) *count);
       Handle<Array> *V2_array = new  Handle<Array>[*count];
