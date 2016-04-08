@@ -12,6 +12,7 @@
     "nan": "^2.1.0",
     "node-gyp": "^3.0.3",
     "nsolvejs": "^0.1.13",
+    "psp-sdk-js": "git+https://github.com/4yopping/psp-sdk.git",
     "randgen": "^0.1.0",
     "rc": "^1.1.2",
     "rng": "^0.2.2"
