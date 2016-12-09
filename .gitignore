@@ -1,9 +1,16 @@
+<<<<<<< HEAD
 # Created by https://www.gitignore.io
 
 ### Node ###
 # Logs
 logs
 *.log
+=======
+# Logs
+logs
+*.log
+npm-debug.log*
+>>>>>>> ad7187b5c0a2d8d6963ed375b7ff4db05d49f339
 
 # Runtime data
 pids
@@ -16,6 +23,12 @@ lib-cov
 # Coverage directory used by tools like istanbul
 coverage
 
+<<<<<<< HEAD
+=======
+# nyc test coverage
+.nyc_output
+
+>>>>>>> ad7187b5c0a2d8d6963ed375b7ff4db05d49f339
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
 
@@ -25,6 +38,7 @@ coverage
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
 
+<<<<<<< HEAD
 # Dependency directory
 #https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 node_modules
@@ -56,3 +70,14 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+=======
+# Dependency directories
+node_modules
+jspm_packages
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+>>>>>>> ad7187b5c0a2d8d6963ed375b7ff4db05d49f339
